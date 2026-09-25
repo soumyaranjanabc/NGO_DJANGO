@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}स्वयंसेवक डैशबोर्ड | Volunteer Command Portal - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-3">
+        <div>
+            <div class="text-xs uppercase font-bold text-amber-700 tracking-wider">
+                नागरिक स्वयंसेवक कक्ष | Citizen Volunteer Operations
+            </div>
+            <h1 class="text-2xl font-black text-govnavy">
+                Namaste, {{ profile.user.get_full_name|default:profile.user.username }}
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Official Seva ID: <span class="font-mono font-bold text-slate-800">{{ profile.volunteer_id }}</span> • 
+                {{ profile.district }}, {{ profile.state }}
+            </p>
+        </div>
+
+        <!-- Action Links -->
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{% url 'volunteer_profile_edit' %}" class="gov-btn gov-btn-outline text-xs py-1.5 px-3">
+                <i class="fa-solid fa-user-pen mr-1"></i> Edit Profile
+            </a>
+            <a href="{% url 'manage_availability' %}" class="gov-btn gov-btn-primary text-xs py-1.5 px-3">
+                <i class="fa-solid fa-calendar-check mr-1"></i> Set Weekly Availability
+            </a>
+            {% if user_is_coordinator %}
+                <a href="{% url 'operations_dashboard' %}" class="gov-btn gov-btn-saffron text-xs py-1.5 px-3">
+                    <i class="fa-solid fa-sliders mr-1"></i> Operations Command
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Column: Official Seva ID Card & Availability Switcher (4 cols) -->
+    <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Official Gov-style Digital Volunteer ID Card -->
+        <div class="gov-card overflow-hidden border-2 border-slate-300 shadow-md">
+            
+            <div class="bg-govnavy text-white p-3 text-center border-b-2 border-amber-500">
+                <div class="text-[10px] text-amber-300 font-bold uppercase tracking-wider">
+                    भारत स्वयंसेवक पहचान पत्र | NGO IDENTITY CARD
+                </div>
+                <div class="text-xs font-semibold text-slate-200">
+                    Rashtriya Seva Setu Portal
+                </div>
+            </div>
+
+            <!-- Card Inner with Tiranga Accent -->
+            <div class="p-5 bg-gradient-to-b from-white to-slate-50 relative">
+                <div class="absolute right-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-500 via-white to-green-600"></div>
+
+                <div class="flex items-center gap-4 mb-4">
+                    <!-- Profile Photo Placeholder or Uploaded Image -->
+                    <!-- ========================================================================= -->
+                    <!-- USER CUSTOMIZATION: VOLUNTEER PHOTO DISPLAY                               -->
+                    <!-- Displays uploaded `profile.profile_picture.url` OR Gov Avatar fallback    -->
+                    <!-- ========================================================================= -->
+                    <div class="w-20 h-20 rounded border-2 border-amber-500 overflow-hidden bg-slate-200 shrink-0 shadow-inner flex items-center justify-center">
+                        {% if profile.profile_picture %}
+                            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="text-center p-2">
+                                <i class="fa-solid fa-user-shield text-3xl text-govnavy"></i>
+                                <span class="text-[8px] text-slate-500 block">Sevak</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300 mb-1">
+                            <i class="fa-solid fa-badge-check mr-1"></i> {{ profile.get_verification_status_display }}
+                        </span>
+                        <h2 class="text-base font-bold text-govnavy leading-tight">
+                            {{ profile.user.get_full_name|default:profile.user.username }}
+                        </h2>
+                        <div class="text-xs text-amber-800 font-mono font-bold mt-0.5">
+                            {{ profile.volunteer_id }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5 text-xs border-t border-slate-200 pt-3 text-slate-700">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tier Recognition:</span>
+                        <span class="font-bold text-amber-700">{{ profile.tier_badge.name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Mobile:</span>
+                        <span class="font-mono">{{ profile.phone }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Blood Group:</span>
+                        <span class="font-bold text-rose-700">{{ profile.blood_group|default:"Not Recorded" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Region:</span>
+                        <span>{{ profile.district }}, {{ profile.state }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Primary Sector:</span>
+                        <span>{{ profile.preferred_sector }}</span>
+                    </div>
+                </div>
+
+                <!-- Skills Tags -->
+                <div class="mt-4 pt-3 border-t border-slate-200">
+                    <div class="text-[11px] font-bold text-slate-600 mb-1.5">Registered Skillsets:</div>
+                    <div class="flex flex-wrap gap-1">
+                        {% for s in profile.skills_list %}
+                            <span class="bg-slate-200/80 text-slate-800 text-[10px] font-medium px-2 py-0.5 rounded">
+                                {{ s }}
+                            </span>
+                        {% empty %}
+                            <span class="text-[11px] text-slate-400">No skills added yet.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Quick Availability Status Switcher -->
+        <div class="gov-card p-5 bg-white border border-slate-200">
+            <h3 class="text-xs font-bold text-govnavy uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
+                <span>Duty Availability Status</span>
+            </h3>
+            
+            <form method="post" action="{% url 'volunteer_dashboard' %}" class="space-y-3">
+                {% csrf_token %}
+                <input type="hidden" name="update_availability_status" value="1">
+                
+                <select name="availability_status" class="gov-select text-xs">
+                    <option value="AVAILABLE" {% if profile.availability_status == 'AVAILABLE' %}selected{% endif %}>
+                        🟢 Available for Deployment
+                    </option>
+                    <option value="IN_SHIFT" {% if profile.availability_status == 'IN_SHIFT' %}selected{% endif %}>
+                        🟡 Currently on Active Shift
+                    </option>
+                    <option value="ON_LEAVE" {% if profile.availability_status == 'ON_LEAVE' %}selected{% endif %}>
+                        🟠 On Leave / Blackout Period
+                    </option>
+                    <option value="INACTIVE" {% if profile.availability_status == 'INACTIVE' %}selected{% endif %}>
+                        ⚪ Inactive / Standby
+                    </option>
+                </select>
+
+                <button type="submit" class="gov-btn gov-btn-primary w-full text-xs py-1.5">
+                    Update Availability Status
+                </button>
+            </form>
+
+            <div class="mt-3 text-[11px] text-slate-500">
+                <a href="{% url 'manage_availability' %}" class="text-blue-900 font-semibold hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-days"></i> Manage recurring weekly time slots
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Operational Metrics, Assigned Shifts, Past Records (8 cols) -->
+    <div class="lg:col-span-8 space-y-6">
+        
+        <!-- Personal Service KPI Counters -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            
+            <div class="gov-card p-4 border-l-4 border-l-amber-500 bg-white">
+                <div class="text-xs text-slate-500 font-bold uppercase">Total Service Hours</div>
+                <div class="text-2xl font-black text-amber-800 font-mono mt-1">
+                    {{ profile.total_hours_served }}h
+                </div>
+                <div class="text-[11px] text-amber-700 mt-0.5">
+                    Rank: {{ profile.tier_badge.name }}
+                </div>
+            </div>
+
+            <div class="gov-card p-4 border-l-4 border-l-blue-600 bg-white">
+                <div class="text-xs text-slate-500 font-bold uppercase">Shifts Completed</div>
+                <div class="text-2xl font-black text-blue-900 mt-1">
+                    {{ profile.completed_shifts_count }}
+                </div>
+                <div class="text-[11px] text-blue-700 mt-0.5">
+                    Field missions signed off
+                </div>
+            </div>
+
+            <div class="gov-card p-4 border-l-4 border-l-emerald-600 bg-white">
+                <div class="text-xs text-slate-500 font-bold uppercase">Upcoming Shifts</div>
+                <div class="text-2xl font-black text-emerald-800 mt-1">
+                    {{ upcoming_assignments.count }}
+                </div>
+                <div class="text-[11px] text-emerald-700 mt-0.5">
+                    Ready for duty
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Upcoming Assigned Duty Shifts -->
+        <div class="gov-card bg-white border border-slate-200 overflow-hidden">
+            <div class="gov-card-header flex justify-between items-center">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-amber-600"></i>
+                    <span>आगामी शिफ्ट्स | My Scheduled Upcoming Shifts</span>
+                </span>
+                <a href="{% url 'campaign_list' %}" class="text-xs text-blue-900 hover:text-amber-600 font-semibold">
+                    Browse More Drives <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="p-4">
+                {% if upcoming_assignments %}
+                    <div class="space-y-4">
+                        {% for a in upcoming_assignments %}
+                            <div class="p-4 rounded border border-slate-200 bg-slate-50 hover:bg-slate-100/60 transition">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                    <div>
+                                        <span class="text-[10px] uppercase font-bold text-amber-700">
+                                            {{ a.shift.campaign.title }}
+                                        </span>
+                                        <h3 class="text-base font-bold text-govnavy">
+                                            <a href="{% url 'shift_detail' a.shift.id %}" class="hover:underline">
+                                                {{ a.shift.title }}
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <span class="{% if a.status == 'APPROVED' %}bg-emerald-100 text-emerald-800 border-emerald-300{% elif a.status == 'WAITLISTED' %}bg-amber-100 text-amber-800 border-amber-300{% else %}bg-slate-200 text-slate-700 border-slate-300{% endif %} text-xs font-bold px-2.5 py-0.5 rounded border">
+                                        {{ a.get_status_display }}
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-600 mb-3">
+                                    <div>
+                                        <i class="fa-solid fa-calendar-day text-slate-400 mr-1"></i>
+                                        <strong>Date:</strong> {{ a.shift.date|date:"D, d M Y" }}
+                                    </div>
+                                    <div>
+                                        <i class="fa-solid fa-clock text-slate-400 mr-1"></i>
+                                        <strong>Timing:</strong> {{ a.shift.start_time|time:"h:i A" }} - {{ a.shift.end_time|time:"h:i A" }}
+                                    </div>
+                                    <div>
+                                        <i class="fa-solid fa-user-tag text-slate-400 mr-1"></i>
+                                        <strong>Role:</strong> {{ a.role.name|default:"General Volunteer" }}
+                                    </div>
+                                </div>
+
+                                <div class="text-xs bg-white p-2.5 rounded border border-slate-200 text-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                    <div>
+                                        <span class="font-bold text-slate-800"><i class="fa-solid fa-location-dot text-amber-600 mr-1"></i> Venue:</span>
+                                        {{ a.shift.reporting_location }} (In-Charge: {{ a.shift.in_charge_name }}, {{ a.shift.in_charge_contact }})
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <a href="{% url 'shift_detail' a.shift.id %}" class="gov-btn gov-btn-outline text-xs py-1 px-2.5">
+                                            Shift Details
+                                        </a>
+                                        <a href="{% url 'cancel_shift_assignment' a.id %}" class="text-xs text-red-700 hover:underline">
+                                            Withdraw
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 text-slate-500 text-xs">
+                        <i class="fa-solid fa-calendar-plus text-3xl text-slate-400 mb-2"></i>
+                        <p class="font-bold text-slate-700">You are not enrolled in any upcoming shifts.</p>
+                        <p class="mt-1">Browse ongoing campaigns to select an operational shift that matches your schedule.</p>
+                        <a href="{% url 'campaign_list' %}" class="gov-btn gov-btn-saffron text-xs mt-3">
+                            <i class="fa-solid fa-list-check mr-1"></i> Explore Active Drives
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Past Participation Records & Certificate Downloads -->
+        <div class="gov-card bg-white border border-slate-200 overflow-hidden">
+            <div class="gov-card-header flex justify-between items-center">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-award text-amber-600"></i>
+                    <span>सेवा रिकॉर्ड और प्रमाणपत्र | Verified Service Records & Certificates</span>
+                </span>
+            </div>
+
+            <div class="p-4">
+                {% if past_records %}
+                    <div class="overflow-x-auto">
+                        <table class="gov-table">
+                            <thead>
+                                <tr>
+                                    <th>Campaign & Shift</th>
+                                    <th>Duty Date</th>
+                                    <th>Hours</th>
+                                    <th>Status</th>
+                                    <th>Certificate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in past_records %}
+                                    <tr>
+                                        <td>
+                                            <div class="font-bold text-govnavy text-xs">{{ r.assignment.shift.campaign.title }}</div>
+                                            <div class="text-[11px] text-slate-500">{{ r.assignment.shift.title }}</div>
+                                        </td>
+                                        <td class="text-xs font-mono">
+                                            {{ r.assignment.shift.date|date:"d M Y" }}
+                                        </td>
+                                        <td class="text-xs font-bold text-amber-700 font-mono">
+                                            {{ r.hours_logged }}h
+                                        </td>
+                                        <td>
+                                            <span class="{% if r.attendance_status == 'PRESENT' %}bg-emerald-100 text-emerald-800{% else %}bg-slate-200 text-slate-700{% endif %} text-[11px] px-2 py-0.5 rounded font-bold">
+                                                {{ r.get_attendance_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if r.attendance_status in 'PRESENT,LATE' %}
+                                                <a href="{% url 'volunteer_certificate' r.id %}" target="_blank" class="gov-btn gov-btn-saffron text-xs py-1 px-2.5 inline-flex items-center gap-1 shadow-sm">
+                                                    <i class="fa-solid fa-certificate"></i> Print Certificate
+                                                </a>
+                                            {% else %}
+                                                <span class="text-slate-400 text-xs">Not Applicable</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-6 text-slate-500 text-xs">
+                        <p>No completed service records yet. Complete your first shift to earn verifiable certificates.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

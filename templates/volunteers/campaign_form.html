@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto my-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'operations_dashboard' %}" class="hover:text-amber-700">Operations Command</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">{{ title }}</span>
+    </nav>
+
+    <div class="gov-card bg-white border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-govnavy text-white p-5 border-b-4 border-amber-500">
+            <h1 class="text-xl font-bold">{{ title }}</h1>
+            <p class="text-xs text-slate-300">Define operational objectives, field location, volunteer requirements, and timelines</p>
+        </div>
+
+        <div class="p-6">
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="p-3 rounded bg-rose-50 border border-rose-300 text-rose-800 text-xs">
+                        Please correct the errors in the form below.
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Campaign Title *</label>
+                        {{ form.title }}
+                    </div>
+                    <div>
+                        <label class="gov-label">URL Slug *</label>
+                        {{ form.slug }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Sector / Domain *</label>
+                        {{ form.sector }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Status</label>
+                        {{ form.status }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Short Summary (for notices & cards) *</label>
+                    {{ form.short_description }}
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Detailed Operational Scope & Objectives *</label>
+                    {{ form.detailed_description }}
+                </div>
+
+                <!-- Campaign Banner Upload with User Comments -->
+                <!-- ========================================================================= -->
+                <!-- USER CUSTOMIZATION: UPLOAD CAMPAIGN HERO PHOTO                            -->
+                <!-- ========================================================================= -->
+                <div class="p-3 rounded bg-slate-50 border border-slate-200 text-xs">
+                    <label class="gov-label">Campaign Banner Image (Optional)</label>
+                    {{ form.banner_image }}
+                    <span class="text-[11px] text-slate-500 block mt-1">Recommended: 1200x600 JPG or PNG.</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Target Beneficiaries (People/Families)</label>
+                        {{ form.target_beneficiaries }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Target Volunteers Quota</label>
+                        {{ form.target_volunteers }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">State / UT *</label>
+                        {{ form.state }}
+                    </div>
+                    <div>
+                        <label class="gov-label">District *</label>
+                        {{ form.district }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Base Camp Venue / Assembly Address *</label>
+                    {{ form.venue_address }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Deployment Start Date *</label>
+                        {{ form.start_date }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Deployment End Date *</label>
+                        {{ form.end_date }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Emergency Helpline Number</label>
+                        {{ form.emergency_helpline }}
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+                    <a href="{% url 'operations_dashboard' %}" class="gov-btn gov-btn-outline text-xs">
+                        Cancel
+                    </a>
+                    <button type="submit" class="gov-btn gov-btn-saffron text-xs py-2 px-4 shadow">
+                        <i class="fa-solid fa-save mr-1"></i> Save & Launch Campaign
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

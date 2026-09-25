@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}सूचना प्रसारण प्रपत्र | Broadcast Circular - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto my-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'operations_dashboard' %}" class="hover:text-amber-700">Operations Command</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Publish Notice</span>
+    </nav>
+
+    <div class="gov-card bg-white border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-govnavy text-white p-5 border-b-4 border-amber-500">
+            <h1 class="text-xl font-bold">Publish Official Notice / Urgent Circular</h1>
+            <p class="text-xs text-slate-300">Broadcast circulars to the portal ticker and volunteer notice boards</p>
+        </div>
+
+        <div class="p-6">
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="text-xs">
+                    <label class="gov-label">Notice Headline *</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Priority Level *</label>
+                        {{ form.priority }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Related Campaign (Optional)</label>
+                        {{ form.campaign }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Message Details *</label>
+                    {{ form.message }}
+                </div>
+
+                <div class="text-xs pt-1">
+                    <label class="flex items-center gap-2 font-medium cursor-pointer text-slate-700">
+                        {{ form.is_published }}
+                        <span>Immediately publish to portal notice ticker and home page</span>
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+                    <a href="{% url 'operations_dashboard' %}" class="gov-btn gov-btn-outline text-xs">
+                        Cancel
+                    </a>
+                    <button type="submit" class="gov-btn bg-purple-800 hover:bg-purple-900 text-white text-xs py-2 px-4 shadow font-bold">
+                        <i class="fa-solid fa-paper-plane mr-1"></i> Broadcast Circular
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

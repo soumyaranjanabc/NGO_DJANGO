@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}शिफ्ट अनुसूची प्रपत्र | Schedule Shift - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto my-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'operations_dashboard' %}" class="hover:text-amber-700">Operations Command</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Schedule Operational Shift</span>
+    </nav>
+
+    <div class="gov-card bg-white border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-govnavy text-white p-5 border-b-4 border-amber-500">
+            <h1 class="text-xl font-bold">Schedule Operational Duty Shift</h1>
+            <p class="text-xs text-slate-300">Set duty date, timings, capacity, reporting point, and field supervisor</p>
+        </div>
+
+        <div class="p-6">
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="p-3 rounded bg-rose-50 border border-rose-300 text-rose-800 text-xs">
+                        Please correct the errors in the form below.
+                    </div>
+                {% endif %}
+
+                <div class="text-xs">
+                    <label class="gov-label">Associated Campaign *</label>
+                    {{ form.campaign }}
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Shift Title *</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Date *</label>
+                        {{ form.date }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Reporting Start Time *</label>
+                        {{ form.start_time }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Departure End Time *</label>
+                        {{ form.end_time }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Exact Reporting Point / Landmark *</label>
+                    {{ form.reporting_location }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Ground In-Charge Name *</label>
+                        {{ form.in_charge_name }}
+                    </div>
+                    <div>
+                        <label class="gov-label">In-Charge Contact Mobile *</label>
+                        {{ form.in_charge_contact }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Required Volunteer Quota *</label>
+                        {{ form.required_volunteers }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Status</label>
+                        {{ form.status }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Special Instructions & Dress Code</label>
+                    {{ form.special_instructions }}
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+                    <a href="{% url 'operations_dashboard' %}" class="gov-btn gov-btn-outline text-xs">
+                        Cancel
+                    </a>
+                    <button type="submit" class="gov-btn gov-btn-primary text-xs py-2 px-4 shadow">
+                        <i class="fa-solid fa-calendar-check mr-1"></i> Confirm & Schedule Shift
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

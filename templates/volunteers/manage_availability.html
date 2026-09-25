@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}साप्ताहिक उपलब्धता प्रबंधन | Manage Volunteer Availability - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'volunteer_dashboard' %}" class="hover:text-amber-700">Volunteer Portal</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Weekly Availability</span>
+    </nav>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        <!-- Add New Slot (5 cols) -->
+        <div class="md:col-span-5">
+            <div class="gov-card p-5 bg-white border border-slate-300 shadow-sm">
+                <h2 class="text-sm font-bold text-govnavy mb-3 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-calendar-plus text-amber-600"></i>
+                    <span>Add Availability Slot</span>
+                </h2>
+                
+                <form method="post" action="{% url 'manage_availability' %}" class="space-y-3 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_slot" value="1">
+
+                    <div>
+                        <label class="gov-label">Day of the Week</label>
+                        {{ form.day_of_week }}
+                    </div>
+
+                    <div>
+                        <label class="gov-label">Preferred Time Slot</label>
+                        {{ form.time_slot }}
+                    </div>
+
+                    <div>
+                        <label class="gov-label">Area / Timing Notes (Optional)</label>
+                        {{ form.notes }}
+                    </div>
+
+                    <button type="submit" class="gov-btn gov-btn-saffron w-full py-2 text-xs font-bold shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Add to Weekly Roster
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Slots List (7 cols) -->
+        <div class="md:col-span-7">
+            <div class="gov-card bg-white border border-slate-200 overflow-hidden shadow-sm">
+                <div class="gov-card-header flex justify-between items-center">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-600"></i>
+                        <span>सक्रिय उपलब्धता स्लॉट्स | Registered Active Slots</span>
+                    </span>
+                    <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">
+                        {{ availabilities.count }} Slots
+                    </span>
+                </div>
+
+                <div class="p-4">
+                    {% if availabilities %}
+                        <div class="space-y-3">
+                            {% for a in availabilities %}
+                                <div class="p-3 rounded border border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
+                                    <div>
+                                        <div class="font-bold text-govnavy">
+                                            {{ a.get_day_of_week_display }}
+                                        </div>
+                                        <div class="text-slate-600">
+                                            <i class="fa-regular fa-clock text-slate-400 mr-1"></i> {{ a.get_time_slot_display }}
+                                        </div>
+                                        {% if a.notes %}
+                                            <div class="text-[11px] text-slate-500 italic mt-0.5">
+                                                Note: {{ a.notes }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <form method="post" action="{% url 'manage_availability' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="delete_slot" value="1">
+                                        <input type="hidden" name="slot_id" value="{{ a.id }}">
+                                        <button type="submit" class="text-red-600 hover:text-red-800 p-1.5" title="Remove slot">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8 text-slate-500 text-xs">
+                            <i class="fa-solid fa-calendar-xmark text-3xl text-slate-400 mb-2"></i>
+                            <p class="font-bold text-slate-700">No recurring weekly availability configured.</p>
+                            <p class="mt-1">Add your available days (e.g. Saturdays, Sundays) so shift coordinators can notify you when matching drives occur.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

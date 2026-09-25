@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}प्रोफ़ाइल संपादन | Edit Volunteer Profile - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto my-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'volunteer_dashboard' %}" class="hover:text-amber-700">Volunteer Portal</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Edit Profile</span>
+    </nav>
+
+    <div class="gov-card bg-white border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-govnavy text-white p-5 border-b-4 border-amber-500 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Edit Volunteer Profile</h1>
+                <p class="text-xs text-slate-300">Update your contact details, operational skills, and availability status</p>
+            </div>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded text-amber-300 border border-slate-700">
+                {{ profile.volunteer_id }}
+            </span>
+        </div>
+
+        <div class="p-6">
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="p-3 rounded bg-rose-50 border border-rose-300 text-rose-800 text-xs">
+                        Please correct the errors in the form below.
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">First Name *</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Last Name *</label>
+                        {{ form.last_name }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Email Address *</label>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Primary Mobile Number</label>
+                        {{ form.phone }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Alternate Mobile / WhatsApp</label>
+                        {{ form.alternate_phone }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Emergency Contact Name</label>
+                        {{ form.emergency_contact_name }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Emergency Contact Phone</label>
+                        {{ form.emergency_contact_phone }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Blood Group</label>
+                        {{ form.blood_group }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Gender</label>
+                        {{ form.gender }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Availability Status</label>
+                        {{ form.availability_status }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">State</label>
+                        {{ form.state }}
+                    </div>
+                    <div>
+                        <label class="gov-label">District</label>
+                        {{ form.district }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Pincode</label>
+                        {{ form.pincode }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Address</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="gov-label">Occupation</label>
+                        {{ form.occupation }}
+                    </div>
+                    <div>
+                        <label class="gov-label">Preferred Sector</label>
+                        {{ form.preferred_sector }}
+                    </div>
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Skills (Comma-separated)</label>
+                    {{ form.skills }}
+                </div>
+
+                <div class="text-xs">
+                    <label class="gov-label">Volunteer Motivation / Bio</label>
+                    {{ form.bio }}
+                </div>
+
+                <!-- Profile Picture Upload with Customization Comments -->
+                <!-- ========================================================================= -->
+                <!-- USER CUSTOMIZATION: UPDATE PROFILE PHOTO                                  -->
+                <!-- ========================================================================= -->
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded text-xs">
+                    <label class="gov-label">Update Profile Headshot Photo</label>
+                    {{ form.profile_picture }}
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                    <a href="{% url 'volunteer_dashboard' %}" class="gov-btn gov-btn-outline text-xs">
+                        Cancel
+                    </a>
+                    <button type="submit" class="gov-btn gov-btn-primary text-xs">
+                        Save Profile Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

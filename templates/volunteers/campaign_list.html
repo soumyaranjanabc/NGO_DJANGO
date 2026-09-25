@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}अभियान निर्देशिका | Active NGO Campaigns Directory - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-slate-500 mb-2 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Campaigns Directory</span>
+    </nav>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-3">
+        <div>
+            <h1 class="text-2xl font-black text-govnavy">
+                अभियान निर्देशिका | NGO Volunteer Campaigns Directory
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Search and explore ongoing, upcoming, and emergency citizen relief initiatives across India.
+            </p>
+        </div>
+
+        {% if user_is_coordinator %}
+            <a href="{% url 'create_campaign' %}" class="gov-btn gov-btn-saffron text-xs">
+                <i class="fa-solid fa-plus-circle mr-1"></i> Initialize New Campaign
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Search & Filtering Control Bar -->
+<div class="gov-card p-4 mb-6 bg-white border border-slate-200">
+    <form method="get" action="{% url 'campaign_list' %}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+        
+        <!-- Search Keyword -->
+        <div class="lg:col-span-2">
+            <label class="gov-label"><i class="fa-solid fa-magnifying-glass text-slate-400 mr-1"></i> Search Keyword</label>
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by campaign title, city or state..." class="gov-input">
+        </div>
+
+        <!-- Sector Filter -->
+        <div>
+            <label class="gov-label"><i class="fa-solid fa-filter text-slate-400 mr-1"></i> Sector / Domain</label>
+            <select name="sector" class="gov-select">
+                <option value="">All Sectors</option>
+                {% for code, label in sectors %}
+                    <option value="{{ code }}" {% if selected_sector == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+            <label class="gov-label"><i class="fa-solid fa-clock text-slate-400 mr-1"></i> Campaign Status</label>
+            <select name="status" class="gov-select">
+                <option value="">All Statuses</option>
+                {% for code, label in statuses %}
+                    <option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Submit & Reset Buttons -->
+        <div class="flex gap-2">
+            <button type="submit" class="gov-btn gov-btn-primary flex-1 text-xs py-2">
+                <i class="fa-solid fa-filter mr-1"></i> Filter
+            </button>
+            <a href="{% url 'campaign_list' %}" class="gov-btn gov-btn-outline text-xs py-2" title="Reset Filters">
+                <i class="fa-solid fa-rotate-left"></i>
+            </a>
+        </div>
+
+    </form>
+</div>
+
+<!-- Campaign Cards Grid -->
+{% if campaigns %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for c in campaigns %}
+            <div class="gov-card flex flex-col overflow-hidden border border-slate-200">
+                
+                <!-- Campaign Banner Placeholder with custom comments -->
+                <!-- ========================================================================= -->
+                <!-- USER CUSTOMIZATION: CAMPAIGN THUMBNAIL PHOTO                              -->
+                <!-- If uploaded in admin, displays `c.banner_image.url`.                      -->
+                <!-- Or place your custom photo in `static/images/campaigns/`                  -->
+                <!-- ========================================================================= -->
+                <div class="h-44 bg-slate-800 relative overflow-hidden flex items-center justify-center text-slate-400">
+                    {% if c.banner_image %}
+                        <img src="{{ c.banner_image.url }}" alt="{{ c.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-4 text-center">
+                            <i class="fa-solid fa-hands-holding-circle text-4xl text-amber-400 mb-2"></i>
+                            <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">{{ c.get_sector_display }}</span>
+                        </div>
+                    {% endif %}
+
+                    <span class="absolute top-2 right-2 bg-govnavy/90 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded shadow border border-amber-400/30">
+                        {{ c.get_sector_display }}
+                    </span>
+
+                    <span class="absolute bottom-2 left-2 
+                        {% if c.status == 'ACTIVE' %}bg-emerald-700
+                        {% elif c.status == 'UPCOMING' %}bg-blue-700
+                        {% else %}bg-slate-700{% endif %} 
+                        text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                        {{ c.get_status_display }}
+                    </span>
+                </div>
+
+                <!-- Card Body -->
+                <div class="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="text-[11px] text-slate-500 font-semibold mb-1 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-amber-600"></i>
+                            <span>{{ c.district }}, {{ c.state }}</span>
+                        </div>
+
+                        <h3 class="text-base font-bold text-govnavy hover:text-amber-600 transition mb-2">
+                            <a href="{{ c.get_absolute_url }}">{{ c.title }}</a>
+                        </h3>
+
+                        <p class="text-xs text-slate-600 line-clamp-2 mb-3">
+                            {{ c.short_description }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <!-- Mobilization progress -->
+                        <div class="mb-3">
+                            <div class="flex justify-between text-[11px] font-semibold text-slate-700 mb-1">
+                                <span>Volunteers: {{ c.enrolled_volunteers_count }} / {{ c.target_volunteers }}</span>
+                                <span>{{ c.mobilization_percentage }}%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                                <div class="bg-amber-500 h-2 rounded-full" style="width: {{ c.mobilization_percentage }}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
+                            <span class="text-slate-500 font-medium">
+                                <i class="fa-solid fa-calendar-days text-slate-400 mr-1"></i> {{ c.start_date|date:"d M" }} - {{ c.end_date|date:"d M, Y" }}
+                            </span>
+                            <a href="{{ c.get_absolute_url }}" class="gov-btn bg-govnavy hover:bg-slate-800 text-white text-xs px-3 py-1.5 rounded">
+                                Shifts & Details <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="gov-card p-12 text-center text-slate-500">
+        <i class="fa-solid fa-filter-circle-xmark text-4xl mb-3 text-slate-400"></i>
+        <h3 class="text-base font-bold text-slate-700">No campaigns matched your search criteria</h3>
+        <p class="text-xs text-slate-500 mt-1">Try resetting the filters or searching with a different keyword.</p>
+        <a href="{% url 'campaign_list' %}" class="gov-btn gov-btn-outline text-xs mt-4">
+            Reset Filters
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

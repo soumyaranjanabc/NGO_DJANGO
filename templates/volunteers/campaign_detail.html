@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ campaign.title }} | राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'campaign_list' %}" class="hover:text-amber-700">Campaigns</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">{{ campaign.title|truncatechars:35 }}</span>
+    </nav>
+</div>
+
+<!-- Campaign Hero Header -->
+<div class="gov-card overflow-hidden mb-6 border border-slate-300">
+    
+    <!-- ========================================================================= -->
+    <!-- USER CUSTOMIZATION: CAMPAIGN HERO BANNER PHOTO                            -->
+    <!-- To customize: Upload banner via Admin OR place file at                    -->
+    <!-- `static/images/campaigns/{{ campaign.slug }}.jpg`                         -->
+    <!-- ========================================================================= -->
+    <div class="h-56 md:h-72 bg-slate-900 relative overflow-hidden flex items-center justify-center">
+        {% if campaign.banner_image %}
+            <img src="{{ campaign.banner_image.url }}" alt="{{ campaign.title }}" class="w-full h-full object-cover">
+        {% else %}
+            <!-- Official Government Theme Banner Graphic -->
+            <div class="w-full h-full bg-gradient-to-r from-govnavy via-blue-950 to-slate-900 flex flex-col items-center justify-center text-center p-6 text-white relative">
+                <div class="absolute inset-0 bg-black/30"></div>
+                <div class="relative z-10 space-y-2">
+                    <span class="inline-block bg-amber-500/20 text-amber-300 border border-amber-400/40 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                        {{ campaign.get_sector_display }}
+                    </span>
+                    <h1 class="text-2xl md:text-3xl font-extrabold max-w-3xl">
+                        {{ campaign.title }}
+                    </h1>
+                    <p class="text-xs text-slate-300 max-w-xl mx-auto">
+                        {{ campaign.venue_address }} • {{ campaign.district }}, {{ campaign.state }}
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="absolute top-3 right-3 flex items-center gap-2">
+            <span class="bg-govnavy/90 text-amber-300 text-xs font-bold px-2.5 py-1 rounded shadow border border-amber-400/30">
+                <i class="fa-solid fa-tag mr-1"></i> {{ campaign.get_sector_display }}
+            </span>
+            <span class="bg-emerald-700 text-white text-xs font-bold px-2.5 py-1 rounded shadow">
+                <i class="fa-solid fa-circle-dot text-[8px] mr-1 text-emerald-200"></i> {{ campaign.get_status_display }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Quick Stats Ribbon -->
+    <div class="bg-slate-50 border-t border-b border-slate-200 p-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Deployment Period</div>
+            <div class="text-sm font-bold text-slate-800">
+                {{ campaign.start_date|date:"d M Y" }} - {{ campaign.end_date|date:"d M Y" }}
+            </div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Target Beneficiaries</div>
+            <div class="text-sm font-bold text-slate-800">
+                {{ campaign.target_beneficiaries }} Citizens / Families
+            </div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Volunteers Enrolled</div>
+            <div class="text-sm font-bold text-amber-700">
+                {{ campaign.enrolled_volunteers_count }} / {{ campaign.target_volunteers }} ({{ campaign.mobilization_percentage }}%)
+            </div>
+        </div>
+        <div>
+            <div class="text-xs text-slate-500 uppercase font-semibold">Field Location</div>
+            <div class="text-sm font-bold text-slate-800">
+                {{ campaign.district }}, {{ campaign.state }}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Left Column: Objectives, Scope & Scheduled Shifts -->
+    <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Detailed Mission Brief -->
+        <div class="gov-card p-6 bg-white border border-slate-200">
+            <h2 class="gov-section-heading text-lg">
+                अभियान का विवरण और उद्देश्य | Mission Scope & Objectives
+            </h2>
+            <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                {{ campaign.detailed_description }}
+            </div>
+
+            <!-- Venue Details -->
+            <div class="mt-6 p-4 rounded bg-blue-50/60 border border-blue-200 text-xs">
+                <div class="font-bold text-blue-950 mb-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-map-location-dot text-amber-700"></i>
+                    <span>Base Camp & Central Reporting Venue:</span>
+                </div>
+                <div class="text-slate-700">
+                    {{ campaign.venue_address }}, {{ campaign.district }}, {{ campaign.state }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign Specific Sub-Activities -->
+        {% if activities %}
+            <div class="gov-card p-6 bg-white border border-slate-200">
+                <h2 class="gov-section-heading text-lg">
+                    गतिविधियाँ और कार्य घटक | Action Components & Activities
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for a in activities %}
+                        <div class="p-3 rounded border border-slate-200 bg-slate-50">
+                            <div class="font-bold text-sm text-govnavy mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+                                <span>{{ a.title }}</span>
+                            </div>
+                            {% if a.description %}
+                                <p class="text-xs text-slate-600 mb-2">{{ a.description }}</p>
+                            {% endif %}
+                            {% if a.required_skill %}
+                                <div class="text-[11px] text-slate-500">
+                                    <strong class="text-slate-700">Required Skills:</strong> {{ a.required_skill }}
+                                </div>
+                            {% endif %}
+                            {% if a.target_metric %}
+                                <div class="text-[11px] text-amber-800 font-semibold mt-1">
+                                    <i class="fa-solid fa-bullseye mr-1"></i> Target: {{ a.target_metric }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Operational Shift Roster -->
+        <div class="gov-card p-6 bg-white border border-slate-200">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b border-slate-200 pb-2">
+                <div>
+                    <h2 class="gov-section-heading text-lg mb-0">
+                        शिफ्ट अनुसूची | Scheduled Duty Shifts
+                    </h2>
+                    <p class="text-xs text-slate-500">
+                        Select a shift to register your duty hours. Ensure you can report at the designated time.
+                    </p>
+                </div>
+                {% if user_is_coordinator %}
+                    <a href="{% url 'create_campaign_shift' campaign.id %}" class="mt-2 sm:mt-0 gov-btn gov-btn-saffron text-xs py-1.5">
+                        <i class="fa-solid fa-calendar-plus mr-1"></i> Add Shift
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if shifts %}
+                <div class="overflow-x-auto">
+                    <table class="gov-table">
+                        <thead>
+                            <tr>
+                                <th>Shift Title & Date</th>
+                                <th>Duty Timings</th>
+                                <th>Reporting Venue</th>
+                                <th>Capacity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in shifts %}
+                                <tr>
+                                    <td>
+                                        <div class="font-bold text-govnavy text-sm">{{ s.title }}</div>
+                                        <div class="text-xs text-slate-500">
+                                            <i class="fa-solid fa-calendar-day text-slate-400 mr-1"></i> {{ s.date|date:"D, d M Y" }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs font-semibold text-slate-800 font-mono">
+                                            {{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}
+                                        </div>
+                                        <div class="text-[11px] text-slate-500 font-sans">
+                                            ({{ s.duration_hours }} hours)
+                                        </div>
+                                    </td>
+                                    <td class="text-xs max-w-xs">
+                                        <div class="line-clamp-2 text-slate-700">{{ s.reporting_location }}</div>
+                                        <div class="text-[11px] text-slate-500">In-Charge: {{ s.in_charge_name }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs font-bold {% if s.is_full %}text-rose-700{% else %}text-emerald-700{% endif %}">
+                                            {{ s.confirmed_count }} / {{ s.required_volunteers }} filled
+                                        </div>
+                                        {% if s.is_full %}
+                                            <span class="inline-block bg-rose-100 text-rose-800 text-[10px] px-1.5 py-0.5 rounded font-bold">
+                                                Waitlist Only
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] px-1.5 py-0.5 rounded font-semibold">
+                                                {{ s.slots_remaining }} slots open
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-1.5">
+                                            {% if user.is_authenticated %}
+                                                <!-- Checking if already enrolled -->
+                                                {% if s.id in user_enrolled_shift_ids %}
+                                                    <span class="bg-blue-100 text-blue-900 border border-blue-300 text-xs px-2.5 py-1 rounded font-bold inline-flex items-center gap-1">
+                                                        <i class="fa-solid fa-check"></i> Enrolled
+                                                    </span>
+                                                {% else %}
+                                                    <a href="{% url 'shift_detail' s.id %}" class="gov-btn gov-btn-saffron text-xs py-1 px-2.5">
+                                                        Join Shift
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{% url 'shift_detail' s.id %}" class="gov-btn gov-btn-primary text-xs py-1 px-2.5">
+                                                    View Details
+                                                </a>
+                                            {% endif %}
+
+                                            {% if user_is_coordinator %}
+                                                <a href="{% url 'manage_shift_roster' s.id %}" class="gov-btn gov-btn-outline text-xs py-1 px-2" title="Manage Roster">
+                                                    <i class="fa-solid fa-users-gear"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-6 text-slate-500 text-xs">
+                    <i class="fa-solid fa-calendar-xmark text-2xl text-slate-400 mb-1"></i>
+                    <p>No shifts have been scheduled for this campaign yet.</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Right Column: Campaign Nodal Desk & Field Rules -->
+    <div class="space-y-6">
+        
+        <!-- Campaign Helpline Card -->
+        <div class="gov-card p-5 bg-white border border-slate-200">
+            <h3 class="text-sm font-bold text-govnavy mb-3 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                <i class="fa-solid fa-headset text-amber-600"></i>
+                <span>Campaign Field Desk</span>
+            </h3>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <span class="text-slate-500 block">Lead Coordinator:</span>
+                    <span class="font-bold text-slate-800">
+                        {{ campaign.coordinator_name }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Emergency Control Helpline:</span>
+                    <span class="font-bold text-amber-700 font-mono text-sm">
+                        {{ campaign.emergency_helpline }}
+                    </span>
+                </div>
+                <div>
+                    <span class="text-slate-500 block">Volunteer Protocol:</span>
+                    <span class="text-slate-700">
+                        Volunteers must carry Photo ID and arrive 15 minutes prior to shift commencement.
+                    </span>
+                </div>
+            </div>
+
+            {% if not user.is_authenticated %}
+                <div class="mt-4 pt-3 border-t border-slate-200">
+                    <a href="{% url 'register' %}" class="gov-btn gov-btn-saffron w-full text-xs py-2">
+                        <i class="fa-solid fa-id-card mr-1"></i> Register to Participate
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Standard Safety & Code of Conduct Notice -->
+        <div class="gov-card p-5 bg-amber-50/70 border border-amber-200">
+            <h3 class="text-xs font-bold text-amber-900 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-amber-700"></i>
+                <span>Standard Volunteer Code</span>
+            </h3>
+            <ul class="text-[11px] text-amber-950 space-y-1.5 list-disc list-inside">
+                <li>Respect local cultural norms and community dignity.</li>
+                <li>Follow the Field Marshall's instructions at all times.</li>
+                <li>Wear assigned identification jacket / badges.</li>
+                <li>Service hours are officially logged post verification.</li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

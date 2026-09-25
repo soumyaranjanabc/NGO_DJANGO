@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}शिफ्ट वापसी पुष्टि | Withdraw Shift Duty - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-10">
+    <div class="gov-card p-6 bg-white border border-slate-300 shadow-md text-center">
+        
+        <div class="w-14 h-14 mx-auto rounded-full bg-rose-100 border border-rose-300 flex items-center justify-center text-rose-600 text-2xl mb-3">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+        <h1 class="text-lg font-black text-govnavy mb-1">
+            Confirm Shift Withdrawal
+        </h1>
+        <p class="text-xs text-slate-500 mb-4">
+            Are you sure you wish to withdraw your enrollment from this operational shift?
+        </p>
+
+        <div class="p-3 rounded bg-slate-50 border border-slate-200 text-xs text-left mb-6 space-y-1">
+            <div><strong class="text-slate-700">Campaign:</strong> {{ assignment.shift.campaign.title }}</div>
+            <div><strong class="text-slate-700">Shift:</strong> {{ assignment.shift.title }}</div>
+            <div><strong class="text-slate-700">Date:</strong> {{ assignment.shift.date|date:"d M Y" }} ({{ assignment.shift.start_time|time:"h:i A" }})</div>
+            <div><strong class="text-slate-700">Venue:</strong> {{ assignment.shift.reporting_location }}</div>
+        </div>
+
+        <form method="post" class="flex gap-3">
+            {% csrf_token %}
+            <a href="{% url 'volunteer_dashboard' %}" class="gov-btn gov-btn-outline flex-1 text-xs py-2">
+                Keep My Shift
+            </a>
+            <button type="submit" class="gov-btn bg-red-700 hover:bg-red-800 text-white flex-1 text-xs py-2 font-bold shadow-sm">
+                Confirm Withdrawal
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

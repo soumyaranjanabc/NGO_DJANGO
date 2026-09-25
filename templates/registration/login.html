@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}विभागीय लॉगिन | Official Volunteer Portal Login - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-8">
+    
+    <div class="gov-card bg-white border border-slate-300 shadow-md overflow-hidden">
+        
+        <!-- Header with Indian Gov Identity Motif -->
+        <div class="bg-govnavy text-white p-5 text-center relative border-b-4 border-amber-500">
+            <div class="w-12 h-12 mx-auto rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-300 text-xl mb-2">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h1 class="text-lg font-black tracking-wide">
+                अधिकारिक लॉगिन | Portal Login
+            </h1>
+            <p class="text-xs text-slate-300 mt-1">
+                Access your Volunteer Dashboard, Shift Schedule & Certificates
+            </p>
+        </div>
+
+        <!-- Form Body -->
+        <div class="p-6">
+            <form method="post" action="{% url 'login' %}" class="space-y-4">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="p-3 rounded bg-rose-50 border border-rose-300 text-rose-800 text-xs">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                        Invalid username, mobile number, or password. Please try again.
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="id_username" class="gov-label">
+                        <i class="fa-solid fa-user text-slate-400 mr-1"></i> Username or Mobile No.
+                    </label>
+                    <input type="text" name="username" autofocus required id="id_username" class="gov-input" placeholder="Enter registered username">
+                </div>
+
+                <div>
+                    <label for="id_password" class="gov-label">
+                        <i class="fa-solid fa-key text-slate-400 mr-1"></i> Password
+                    </label>
+                    <input type="password" name="password" required id="id_password" class="gov-input" placeholder="Enter account password">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="gov-btn gov-btn-primary w-full py-2.5 text-sm font-bold shadow-md">
+                        <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Secure Login
+                    </button>
+                </div>
+            </form>
+
+            <!-- Registration Redirect Link -->
+            <div class="mt-6 pt-4 border-t border-slate-200 text-center text-xs">
+                <span class="text-slate-600">New citizen volunteer?</span>
+                <a href="{% url 'register' %}" class="text-amber-700 font-bold hover:underline ml-1">
+                    Register as Volunteer (स्वयंसेवक नामांकन)
+                </a>
+            </div>
+
+            <!-- Demo Credentials Helper for instant review -->
+            <div class="mt-4 p-3 rounded bg-blue-50/80 border border-blue-200 text-xs text-slate-700">
+                <div class="font-bold text-govnavy mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-info text-blue-600"></i>
+                    <span>Reviewer / Demo Access:</span>
+                </div>
+                <div class="text-[11px] space-y-0.5 font-mono text-slate-600">
+                    <div>Coordinator: <strong class="text-govnavy">coordinator</strong> / Pass: <strong class="text-govnavy">seva@2026</strong></div>
+                    <div>Volunteer: <strong class="text-govnavy">volunteer1</strong> / Pass: <strong class="text-govnavy">seva@2026</strong></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

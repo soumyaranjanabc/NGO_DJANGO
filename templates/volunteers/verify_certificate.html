@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}प्रमाणपत्र सत्यापन | Verify Volunteer Certificate - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto my-8">
+    
+    <div class="gov-card bg-white border border-slate-300 shadow-md overflow-hidden">
+        
+        <div class="bg-govnavy text-white p-6 text-center border-b-4 border-amber-500">
+            <div class="w-14 h-14 mx-auto rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300 text-2xl mb-2">
+                <i class="fa-solid fa-certificate"></i>
+            </div>
+            <h1 class="text-xl md:text-2xl font-black">
+                प्रमाणपत्र सत्यापन पोर्टल | Certificate Verification Portal
+            </h1>
+            <p class="text-xs text-slate-300 mt-1">
+                Verify the authenticity of digital certificates issued by the National Volunteer Operations Platform.
+            </p>
+        </div>
+
+        <div class="p-6 md:p-8">
+            
+            <!-- Verification Search Form -->
+            <form method="get" action="{% url 'verify_certificate' %}" class="space-y-4 mb-6">
+                <div>
+                    <label class="gov-label text-xs uppercase tracking-wider">
+                        Enter Certificate Security Code
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" name="code" value="{{ cert_code }}" 
+                               placeholder="e.g. NGO-SEVA-2026-XXXXXXXX" 
+                               required class="gov-input font-mono text-sm uppercase">
+                        <button type="submit" class="gov-btn gov-btn-saffron px-5 text-xs font-bold shadow">
+                            <i class="fa-solid fa-magnifying-glass mr-1"></i> Verify
+                        </button>
+                    </div>
+                    <span class="text-[11px] text-slate-500 mt-1 block">
+                        The code is printed on the bottom-left corner of the official Certificate of Appreciation.
+                    </span>
+                </div>
+            </form>
+
+            <!-- Verification Results Display -->
+            {% if searched %}
+                {% if record %}
+                    <!-- Genuine Certificate Record -->
+                    <div class="p-6 rounded-lg border-2 border-emerald-500 bg-emerald-50/50 shadow-inner">
+                        <div class="flex items-center gap-3 text-emerald-800 font-black text-base border-b border-emerald-200 pb-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <div>VERIFIED GENUINE SERVICE RECORD</div>
+                                <div class="text-xs font-normal text-emerald-700 font-mono">Code: {{ record.certificate_code }}</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs text-slate-800">
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Conferred Volunteer:</span>
+                                <span class="font-bold text-sm text-govnavy">
+                                    {{ record.assignment.volunteer.user.get_full_name|default:record.assignment.volunteer.user.username }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Official Seva ID:</span>
+                                <span class="font-mono font-bold text-amber-800">{{ record.assignment.volunteer.volunteer_id }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Campaign Initiative:</span>
+                                <span class="font-semibold text-slate-800">{{ record.assignment.shift.campaign.title }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Duty Shift & Role:</span>
+                                <span>{{ record.assignment.shift.title }} ({{ record.assignment.role.name|default:"General Volunteer" }})</span>
+                            </div>
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Duty Date & Venue:</span>
+                                <span>{{ record.assignment.shift.date|date:"d M Y" }} at {{ record.assignment.shift.reporting_location }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-emerald-100 pb-1.5">
+                                <span class="text-slate-500">Credited Service Hours:</span>
+                                <span class="font-mono font-bold text-emerald-800">{{ record.hours_logged }} Hours</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span class="text-slate-500">Authentication Timestamp:</span>
+                                <span class="font-mono text-slate-600">{{ record.created_at|date:"d M Y, h:i A" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-emerald-200 text-center">
+                            <a href="{% url 'volunteer_certificate' record.id %}" target="_blank" class="gov-btn gov-btn-saffron text-xs py-1.5 px-4 shadow">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> View Full Certificate Document
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Invalid / Unverified Code -->
+                    <div class="p-6 rounded-lg border-2 border-rose-400 bg-rose-50 text-center">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-rose-600 text-white flex items-center justify-center text-2xl mb-2 shadow">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-rose-950">Certificate Not Found</h3>
+                        <p class="text-xs text-rose-800 mt-1 max-w-sm mx-auto">
+                            The certificate code <span class="font-mono font-bold">{{ cert_code }}</span> could not be verified against the official national NGO volunteer registry.
+                        </p>
+                        <p class="text-[11px] text-slate-600 mt-3">
+                            Please check for typographical errors or reach out to the control room at {{ HELPLINE_PRIMARY }}.
+                        </p>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}परिचालन कमांड केंद्र | Operations Command Center - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-3">
+        <div>
+            <div class="text-xs uppercase font-bold text-amber-700 tracking-wider">
+                NGO Nodal Command & Roster Administration
+            </div>
+            <h1 class="text-2xl font-black text-govnavy">
+                Operations & Volunteer Command Center (परिचालन केंद्र)
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Real-time volunteer mobilization, roster allocations, shift coordination, and attendance sign-offs.
+            </p>
+        </div>
+
+        <!-- Quick Action Command Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{% url 'create_campaign' %}" class="gov-btn gov-btn-saffron text-xs py-1.5 px-3">
+                <i class="fa-solid fa-plus-circle mr-1"></i> New Campaign
+            </a>
+            <a href="{% url 'create_shift' %}" class="gov-btn gov-btn-primary text-xs py-1.5 px-3">
+                <i class="fa-solid fa-calendar-plus mr-1"></i> Schedule Shift
+            </a>
+            <a href="{% url 'create_announcement' %}" class="gov-btn bg-purple-800 hover:bg-purple-900 text-white text-xs py-1.5 px-3">
+                <i class="fa-solid fa-bullhorn mr-1"></i> Publish Circular
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Operations KPI Tiles -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
+    
+    <div class="gov-card p-4 border-l-4 border-l-blue-600 bg-white">
+        <div class="text-[11px] font-bold uppercase text-slate-500">Registered Volunteers</div>
+        <div class="text-2xl font-black text-blue-950 mt-1">{{ total_volunteers }}</div>
+        <div class="text-[10px] text-emerald-700 font-semibold">{{ verified_volunteers }} Verified Active</div>
+    </div>
+
+    <div class="gov-card p-4 border-l-4 border-l-amber-500 bg-white">
+        <div class="text-[11px] font-bold uppercase text-slate-500">Active Campaigns</div>
+        <div class="text-2xl font-black text-amber-900 mt-1">{{ active_campaigns.count }}</div>
+        <div class="text-[10px] text-slate-500">Across states & districts</div>
+    </div>
+
+    <div class="gov-card p-4 border-l-4 border-l-emerald-600 bg-white">
+        <div class="text-[11px] font-bold uppercase text-slate-500">Pending Actions</div>
+        <div class="text-2xl font-black text-emerald-900 mt-1">{{ shifts_needing_attendance.count }}</div>
+        <div class="text-[10px] text-amber-700 font-semibold">Shifts awaiting sign-off</div>
+    </div>
+
+    <div class="gov-card p-4 border-l-4 border-l-indigo-600 bg-white">
+        <div class="text-[11px] font-bold uppercase text-slate-500">Total Hours Served</div>
+        <div class="text-2xl font-black text-indigo-950 font-mono mt-1">{{ total_hours }}h</div>
+        <div class="text-[10px] text-slate-500">Credited to volunteers</div>
+    </div>
+
+    <div class="gov-card p-4 border-l-4 border-l-slate-700 bg-white col-span-2 md:col-span-1">
+        <div class="text-[11px] font-bold uppercase text-slate-500">Data Exports</div>
+        <div class="mt-2 flex flex-col gap-1 text-[11px]">
+            <a href="{% url 'export_volunteers_csv' %}" class="text-blue-900 hover:underline flex items-center gap-1 font-semibold">
+                <i class="fa-solid fa-file-csv text-emerald-600"></i> Export Volunteers
+            </a>
+            <a href="{% url 'export_attendance_csv' %}" class="text-blue-900 hover:underline flex items-center gap-1 font-semibold">
+                <i class="fa-solid fa-file-csv text-blue-600"></i> Export Audit Log
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Shifts Needing Immediate Attendance Sign-Off -->
+{% if shifts_needing_attendance %}
+    <div class="gov-card mb-6 border border-amber-300 bg-amber-50/40 overflow-hidden">
+        <div class="bg-amber-100 border-b border-amber-300 p-3 px-4 flex justify-between items-center text-amber-900 font-bold text-xs uppercase tracking-wider">
+            <span class="flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-700"></i>
+                <span>Action Required: Shifts Awaiting Attendance & Certificate Finalization</span>
+            </span>
+            <span>{{ shifts_needing_attendance.count }} shifts pending</span>
+        </div>
+
+        <div class="p-4">
+            <div class="overflow-x-auto">
+                <table class="gov-table bg-white">
+                    <thead>
+                        <tr>
+                            <th>Campaign & Shift</th>
+                            <th>Date & Time</th>
+                            <th>Confirmed Volunteers</th>
+                            <th>In-Charge Officer</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in shifts_needing_attendance %}
+                            <tr>
+                                <td>
+                                    <div class="font-bold text-govnavy text-xs">{{ s.campaign.title }}</div>
+                                    <div class="text-xs text-slate-700">{{ s.title }}</div>
+                                </td>
+                                <td class="text-xs font-mono">
+                                    {{ s.date|date:"d M Y" }} ({{ s.start_time|time:"h:i A" }})
+                                </td>
+                                <td class="text-xs font-bold text-amber-800">
+                                    {{ s.confirmed_count }} Volunteers
+                                </td>
+                                <td class="text-xs text-slate-600">
+                                    {{ s.in_charge_name }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'mark_shift_attendance' s.id %}" class="gov-btn gov-btn-green text-xs py-1 px-3 shadow-sm font-bold">
+                                        <i class="fa-solid fa-signature mr-1"></i> Mark Attendance & Certify
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Upcoming Operational Shifts & Rosters -->
+<div class="gov-card bg-white border border-slate-200 overflow-hidden mb-6 shadow-sm">
+    <div class="gov-card-header flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <span class="flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-amber-600"></i>
+            <span>आगामी शिफ्ट्स और रोस्टर प्रबंधन | Upcoming Operational Shifts & Rosters</span>
+        </span>
+        <a href="{% url 'create_shift' %}" class="text-xs text-blue-900 hover:text-amber-600 font-semibold">
+            + Schedule New Shift
+        </a>
+    </div>
+
+    <div class="p-4">
+        {% if upcoming_shifts %}
+            <div class="overflow-x-auto">
+                <table class="gov-table">
+                    <thead>
+                        <tr>
+                            <th>Shift Title</th>
+                            <th>Campaign</th>
+                            <th>Date & Timing</th>
+                            <th>Roster Capacity</th>
+                            <th>Status</th>
+                            <th>Roster Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in upcoming_shifts %}
+                            <tr>
+                                <td>
+                                    <div class="font-bold text-govnavy text-sm">
+                                        <a href="{% url 'shift_detail' s.id %}" class="hover:underline">
+                                            {{ s.title }}
+                                        </a>
+                                    </div>
+                                    <div class="text-[11px] text-slate-500">
+                                        <i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> {{ s.reporting_location|truncatechars:35 }}
+                                    </div>
+                                </td>
+                                <td class="text-xs text-slate-700">
+                                    {{ s.campaign.title|truncatechars:30 }}
+                                </td>
+                                <td class="text-xs">
+                                    <div class="font-bold text-slate-800">{{ s.date|date:"d M Y" }}</div>
+                                    <div class="text-slate-500 font-mono text-[11px]">{{ s.start_time|time:"h:i A" }} - {{ s.end_time|time:"h:i A" }}</div>
+                                </td>
+                                <td>
+                                    <div class="text-xs font-bold {% if s.is_full %}text-rose-700{% else %}text-emerald-700{% endif %}">
+                                        {{ s.confirmed_count }} / {{ s.required_volunteers }}
+                                    </div>
+                                    <div class="text-[10px] text-slate-500">
+                                        {% if s.is_full %}Quota Full{% else %}{{ s.slots_remaining }} available{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">
+                                        {{ s.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-1.5">
+                                        <a href="{% url 'manage_shift_roster' s.id %}" class="gov-btn gov-btn-primary text-xs py-1 px-2.5" title="Assign Roles & Manage Applicants">
+                                            <i class="fa-solid fa-users-gear mr-1"></i> Roster
+                                        </a>
+                                        <a href="{% url 'mark_shift_attendance' s.id %}" class="gov-btn gov-btn-outline text-xs py-1 px-2" title="Attendance">
+                                            <i class="fa-solid fa-signature"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8 text-slate-500 text-xs">
+                <i class="fa-solid fa-calendar-xmark text-3xl text-slate-400 mb-2"></i>
+                <p>No operational shifts currently scheduled. Click 'Schedule Shift' to launch one.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Active Campaigns Overview -->
+<div class="gov-card bg-white border border-slate-200 overflow-hidden shadow-sm">
+    <div class="gov-card-header flex justify-between items-center">
+        <span class="flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn text-amber-600"></i>
+            <span>Active Campaigns Portfolio</span>
+        </span>
+        <a href="{% url 'create_campaign' %}" class="text-xs text-blue-900 hover:text-amber-600 font-semibold">
+            + Initialize Campaign
+        </a>
+    </div>
+
+    <div class="p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for c in active_campaigns %}
+                <div class="p-3.5 rounded border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-[10px] uppercase font-bold text-amber-700">{{ c.get_sector_display }}</span>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">Active</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-govnavy mb-1">
+                            <a href="{{ c.get_absolute_url }}" class="hover:underline">{{ c.title }}</a>
+                        </h4>
+                        <p class="text-xs text-slate-600 line-clamp-2 mb-2">{{ c.short_description }}</p>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                        <span class="text-slate-500 font-semibold">
+                            {{ c.enrolled_volunteers_count }} / {{ c.target_volunteers }} Volunteers
+                        </span>
+                        <a href="{% url 'create_campaign_shift' c.id %}" class="text-amber-700 hover:underline font-bold text-[11px]">
+                            + Add Shift
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-3 text-center py-6 text-slate-500 text-xs">
+                    No active campaigns in portfolio.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

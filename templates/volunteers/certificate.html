@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}प्रशस्ति पत्र | Certificate of Appreciation - {{ volunteer.volunteer_id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-6">
+    
+    <!-- Top Print Control Bar (Hidden during printing) -->
+    <div class="no-print flex flex-col sm:flex-row justify-between items-center gap-3 p-4 mb-6 rounded bg-white border border-slate-300 shadow-sm">
+        <div class="text-xs text-slate-600">
+            <i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>
+            This is an authentic, verifiable digital Certificate of Volunteer Service.
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="gov-btn gov-btn-saffron text-xs py-1.5 px-4 shadow">
+                <i class="fa-solid fa-print mr-1"></i> Print / Save as PDF
+            </button>
+            <a href="{% url 'volunteer_dashboard' %}" class="gov-btn gov-btn-outline text-xs py-1.5 px-3">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Return to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Printable Official Certificate Document Frame -->
+    <div class="printable-area certificate-frame bg-[#FCFDFD] p-8 md:p-12 text-center text-slate-800 shadow-2xl relative overflow-hidden">
+        
+        <!-- Corner Decorative Indian Ornaments -->
+        <div class="absolute top-2 left-2 text-amber-600 text-lg">❖</div>
+        <div class="absolute top-2 right-2 text-amber-600 text-lg">❖</div>
+        <div class="absolute bottom-2 left-2 text-amber-600 text-lg">❖</div>
+        <div class="absolute bottom-2 right-2 text-amber-600 text-lg">❖</div>
+
+        <!-- ========================================================================= -->
+        <!-- USER CUSTOMIZATION: CERTIFICATE EMBLEM / LOGO                             -->
+        <!-- Replace the SVG below with your own NGO Emblem or Stamp image:            -->
+        <!-- <img src="{% static 'images/ngo-seal.png' %}" class="w-20 h-20 mx-auto"> -->
+        <!-- ========================================================================= -->
+        <div class="gov-emblem-seal w-20 h-20 mx-auto mb-3 shadow-md bg-amber-50 border-2 border-amber-600 flex items-center justify-center">
+            <svg class="w-14 h-14 text-blue-900" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="46" stroke="#000080" stroke-width="4"/>
+                <circle cx="50" cy="50" r="12" fill="#000080"/>
+                <g stroke="#000080" stroke-width="2">
+                    <line x1="50" y1="4" x2="50" y2="96"/>
+                    <line x1="4" y1="50" x2="96" y2="50"/>
+                    <line x1="17.5" y1="17.5" x2="82.5" y2="82.5"/>
+                    <line x1="17.5" y1="82.5" x2="82.5" y2="17.5"/>
+                    <line x1="27.3" y1="7.3" x2="72.7" y2="92.7"/>
+                    <line x1="7.3" y1="27.3" x2="92.7" y2="72.7"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="text-xs uppercase tracking-widest text-amber-800 font-bold mb-1">
+            {{ NGO_AFFILIATION }}
+        </div>
+        <div class="text-sm font-black text-govnavy uppercase tracking-wider mb-2">
+            {{ NGO_PORTAL_NAME }}
+        </div>
+
+        <!-- Tiranga Accent Line -->
+        <div class="w-48 h-1 mx-auto my-3 bg-gradient-to-r from-amber-500 via-white to-green-600"></div>
+
+        <h1 class="text-2xl md:text-3xl font-black text-govnavy font-serif tracking-wide mt-4 uppercase">
+            प्रशस्ति पत्र
+        </h1>
+        <div class="text-sm md:text-base font-bold text-amber-900 uppercase tracking-widest mb-6 font-serif">
+            Certificate of Exemplary Volunteer Service
+        </div>
+
+        <p class="text-xs md:text-sm text-slate-600 italic mb-2">
+            This certificate of humanitarian dedication is proudly conferred upon
+        </p>
+
+        <div class="text-2xl md:text-4xl font-extrabold text-govnavy my-3 font-serif underline decoration-amber-500/60 underline-offset-8">
+            {{ volunteer.user.get_full_name|default:volunteer.user.username }}
+        </div>
+
+        <div class="text-xs font-mono font-bold text-amber-900 mb-6">
+            Official Seva ID: {{ volunteer.volunteer_id }}
+        </div>
+
+        <div class="max-w-2xl mx-auto text-xs md:text-sm text-slate-700 leading-relaxed mb-8">
+            in grateful recognition of selfless contribution, discipline, and exemplary civic service rendered during the
+            <strong class="text-govnavy font-bold block text-sm md:text-base my-1">
+                "{{ campaign.title }}"
+            </strong>
+            specifically on operational duty for <span class="font-semibold text-slate-900">{{ shift.title }}</span> 
+            {% if record.assignment.role %}as <span class="font-semibold text-blue-900">{{ record.assignment.role.name }}</span>{% endif %}, 
+            having successfully contributed <strong class="text-amber-800 font-mono font-bold">{{ record.hours_logged }} hours</strong> of verified humanitarian ground service at {{ shift.reporting_location }}.
+        </div>
+
+        <!-- Certificate Signatory Block -->
+        <div class="grid grid-cols-3 gap-4 items-end mt-10 pt-6 border-t border-slate-300">
+            
+            <!-- Signatory 1 -->
+            <div class="text-center">
+                <div class="font-serif italic text-base text-slate-800 font-semibold mb-1">
+                    Dr. S. K. Sharma
+                </div>
+                <div class="w-32 h-0.5 bg-slate-400 mx-auto mb-1"></div>
+                <div class="text-[11px] font-bold text-govnavy">Director of Field Operations</div>
+                <div class="text-[10px] text-slate-500">Central Volunteer Directorate</div>
+            </div>
+
+            <!-- Central Official Seal Stamp Placeholder -->
+            <!-- ========================================================================= -->
+            <!-- USER CUSTOMIZATION: CERTIFICATE STAMP / SEAL                              -->
+            <!-- Place your stamp image in `static/images/ngo-stamp.png`                   -->
+            <!-- ========================================================================= -->
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full border-2 border-dashed border-amber-600 bg-amber-50/50 mx-auto flex flex-col items-center justify-center p-1 text-[9px] font-bold text-amber-900 uppercase">
+                    <i class="fa-solid fa-stamp text-amber-700 text-sm mb-0.5"></i>
+                    <span>Official Stamp</span>
+                    <span class="text-[7px] text-slate-500">Verified</span>
+                </div>
+                <div class="text-[10px] text-slate-500 font-mono mt-1">Issued: {{ issue_date }}</div>
+            </div>
+
+            <!-- Signatory 2 -->
+            <div class="text-center">
+                <div class="font-serif italic text-base text-slate-800 font-semibold mb-1">
+                    A. V. Senapati
+                </div>
+                <div class="w-32 h-0.5 bg-slate-400 mx-auto mb-1"></div>
+                <div class="text-[11px] font-bold text-govnavy">National Secretary</div>
+                <div class="text-[10px] text-slate-500">Voluntary Action Trust</div>
+            </div>
+
+        </div>
+
+        <!-- Verification Security Bar -->
+        <div class="mt-8 pt-4 border-t border-dashed border-slate-300 flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-500 font-mono gap-2">
+            <div>
+                Certificate Verification ID: <span class="font-bold text-slate-800">{{ record.certificate_code }}</span>
+            </div>
+            <div>
+                Verify Authenticity at: <span class="text-blue-900 underline">sevadaan.ngo/verify-certificate</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

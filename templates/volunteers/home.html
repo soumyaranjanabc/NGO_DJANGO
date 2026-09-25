@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}राष्ट्रीय सेवा सेतु | Home - National NGO Volunteer Operations Platform{% endblock %}
+
+{% block content %}
+<!-- ========================================================================= -->
+<!-- HERO SECTION - NATIONAL VOLUNTEER MOBILIZATION                            -->
+<!-- ========================================================================= -->
+<section class="mb-8">
+    <div class="relative rounded-lg overflow-hidden border border-slate-300 shadow-md bg-gradient-to-r from-govnavy via-blue-950 to-slate-900 text-white">
+        
+        <!-- Decorative Tiranga Accent on Left -->
+        <div class="absolute left-0 top-0 bottom-0 w-2.5 bg-gradient-to-b from-amber-500 via-white to-green-600"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-6 md:p-10 pl-8">
+            
+            <div class="lg:col-span-7 space-y-4">
+                <div class="inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>राष्ट्रीय स्वयंसेवक अभियान | National Voluntary Service Drive</span>
+                </div>
+                
+                <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight leading-tight text-white">
+                    Citizen Action for Humanitarian Relief, Community Welfare & Nation Building
+                </h1>
+                
+                <p class="text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl">
+                    A unified digital operations system connecting registered volunteers, ground coordinators, disaster response units, and civic relief campaigns across India.
+                </p>
+
+                <!-- Quick Action Buttons -->
+                <div class="pt-2 flex flex-wrap gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'register' %}" class="gov-btn bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 shadow-md">
+                            <i class="fa-solid fa-user-plus mr-1"></i> Register as Volunteer (स्वयंसेवक)
+                        </a>
+                        <a href="{% url 'campaign_list' %}" class="gov-btn bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2.5 border border-white/30">
+                            <i class="fa-solid fa-list-check mr-1"></i> Browse Active Campaigns
+                        </a>
+                    {% else %}
+                        <a href="{% url 'volunteer_dashboard' %}" class="gov-btn bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 shadow-md">
+                            <i class="fa-solid fa-gauge mr-1"></i> Go to Volunteer Portal
+                        </a>
+                        {% if user_is_coordinator %}
+                            <a href="{% url 'operations_dashboard' %}" class="gov-btn bg-blue-700 hover:bg-blue-600 text-white font-semibold px-4 py-2.5">
+                                <i class="fa-solid fa-clipboard-check mr-1"></i> Operations Command
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hero Graphic / NGO Banner Photo Container -->
+            <div class="lg:col-span-5">
+                <!-- ========================================================================= -->
+                <!-- USER CUSTOMIZATION: REPLACE THIS HERO BANNER WITH YOUR OWN NGO PHOTO       -->
+                <!-- To replace: Place your image in `static/images/hero-ngo-banner.jpg`        -->
+                <!-- and change the <img> src below to `{% static 'images/hero-ngo-banner.jpg' %}` -->
+                <!-- ========================================================================= -->
+                <div class="relative rounded border-2 border-amber-400/30 overflow-hidden shadow-2xl bg-slate-800 aspect-video flex flex-col items-center justify-center text-center p-4">
+                    
+                    <!-- Fallback Graphic with Gov Motif -->
+                    <div class="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-400 text-2xl mb-3">
+                        <i class="fa-solid fa-people-carry-box"></i>
+                    </div>
+                    <div class="text-sm font-bold text-amber-300">
+                        Humanitarian Volunteer Operations
+                    </div>
+                    <div class="text-xs text-slate-300 mt-1 max-w-xs">
+                        Coordinating real-time volunteer rosters, flood relief, rural education, and health camps.
+                    </div>
+                    <div class="mt-3 text-[11px] text-amber-400/80 border-t border-slate-700 pt-2 w-full">
+                        <!-- Custom Image Notice -->
+                        <i class="fa-solid fa-camera mr-1"></i> Custom NGO Banner photo placeholder
+                    </div>
+
+                    <!-- UNCOMMENT BELOW TO USE YOUR OWN IMAGE FILE:
+                    <img src="{% static 'images/hero-ngo-banner.jpg' %}" alt="NGO Field Work" class="absolute inset-0 w-full h-full object-cover">
+                    -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- NATIONAL MOBILIZATION STATISTICS (KEY PERFORMANCE INDICATORS)              -->
+<!-- ========================================================================= -->
+<section class="mb-10">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+        
+        <!-- Tile 1: Registered Volunteers -->
+        <div class="gov-card p-4 text-center border-t-4 border-t-amber-500">
+            <div class="text-2xl md:text-3xl font-black text-govnavy">
+                {{ total_volunteers }}
+            </div>
+            <div class="text-xs uppercase font-bold text-slate-600 mt-1">
+                Registered Volunteers
+            </div>
+            <div class="text-[10px] text-amber-700 font-semibold mt-0.5">पंजीकृत स्वयंसेवक</div>
+        </div>
+
+        <!-- Tile 2: Active Campaigns -->
+        <div class="gov-card p-4 text-center border-t-4 border-t-blue-600">
+            <div class="text-2xl md:text-3xl font-black text-blue-900">
+                {{ active_campaigns_count }}
+            </div>
+            <div class="text-xs uppercase font-bold text-slate-600 mt-1">
+                Active Campaigns
+            </div>
+            <div class="text-[10px] text-blue-700 font-semibold mt-0.5">सक्रिय अभियान</div>
+        </div>
+
+        <!-- Tile 3: Ground Shifts Executed -->
+        <div class="gov-card p-4 text-center border-t-4 border-t-emerald-600">
+            <div class="text-2xl md:text-3xl font-black text-emerald-800">
+                {{ total_shifts_conducted }}
+            </div>
+            <div class="text-xs uppercase font-bold text-slate-600 mt-1">
+                Shifts Scheduled
+            </div>
+            <div class="text-[10px] text-emerald-700 font-semibold mt-0.5">आयोजित शिफ्ट्स</div>
+        </div>
+
+        <!-- Tile 4: Service Hours Contributed -->
+        <div class="gov-card p-4 text-center border-t-4 border-t-amber-600">
+            <div class="text-2xl md:text-3xl font-black text-amber-800 font-mono">
+                {{ total_hours_served }}h
+            </div>
+            <div class="text-xs uppercase font-bold text-slate-600 mt-1">
+                Hours Contributed
+            </div>
+            <div class="text-[10px] text-amber-700 font-semibold mt-0.5">सेवा घंटे समर्पित</div>
+        </div>
+
+        <!-- Tile 5: Districts Covered -->
+        <div class="gov-card p-4 text-center border-t-4 border-t-indigo-600 col-span-2 md:col-span-1">
+            <div class="text-2xl md:text-3xl font-black text-indigo-900">
+                {{ districts_covered }}
+            </div>
+            <div class="text-xs uppercase font-bold text-slate-600 mt-1">
+                Districts Covered
+            </div>
+            <div class="text-[10px] text-indigo-700 font-semibold mt-0.5">कार्यक्षेत्र ज़िले</div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- FEATURED ONGOING CAMPAIGNS & DRIVES                                        -->
+<!-- ========================================================================= -->
+<section class="mb-12">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 border-b border-slate-200 pb-2">
+        <div>
+            <h2 class="gov-section-heading text-xl md:text-2xl">
+                सक्रिय अभियान और राहत कार्य | Ongoing Campaigns
+            </h2>
+            <p class="text-xs text-slate-500">
+                Explore real-time humanitarian and social missions currently deploying volunteer cohorts.
+            </p>
+        </div>
+        <a href="{% url 'campaign_list' %}" class="mt-2 sm:mt-0 text-xs font-bold text-blue-900 hover:text-amber-600 flex items-center gap-1">
+            View All Campaigns <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    {% if featured_campaigns %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for c in featured_campaigns %}
+                <div class="gov-card flex flex-col overflow-hidden border border-slate-200">
+                    
+                    <!-- ========================================================================= -->
+                    <!-- USER CUSTOMIZATION: CAMPAIGN THUMBNAIL PHOTO                              -->
+                    <!-- If uploaded in admin, it displays `c.banner_image.url`.                   -->
+                    <!-- Or replace default fallback below with your custom image:                 -->
+                    <!-- `{% static 'images/campaigns/' %}{{ c.slug }}.jpg`                        -->
+                    <!-- ========================================================================= -->
+                    <div class="h-44 bg-slate-800 relative overflow-hidden flex items-center justify-center text-slate-400">
+                        {% if c.banner_image %}
+                            <img src="{{ c.banner_image.url }}" alt="{{ c.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <!-- Fallback stylized category placeholder with emblem -->
+                            <div class="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-4 text-center">
+                                <i class="fa-solid fa-hands-holding-circle text-4xl text-amber-400 mb-2"></i>
+                                <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">{{ c.get_sector_display }}</span>
+                                <span class="text-[10px] text-slate-400 mt-1"><!-- Add your photo in Admin or static/ --></span>
+                            </div>
+                        {% endif %}
+
+                        <!-- Sector Badge -->
+                        <span class="absolute top-2 right-2 bg-govnavy/90 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded shadow border border-amber-400/30">
+                            {{ c.get_sector_display }}
+                        </span>
+                        
+                        <!-- Status Badge -->
+                        <span class="absolute bottom-2 left-2 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                            <i class="fa-solid fa-circle-dot text-[8px] mr-1 text-emerald-200 animate-pulse"></i> {{ c.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-[11px] text-slate-500 font-semibold mb-1 flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot text-amber-600"></i>
+                                <span>{{ c.district }}, {{ c.state }}</span>
+                            </div>
+
+                            <h3 class="text-base font-bold text-govnavy hover:text-amber-600 transition mb-2">
+                                <a href="{{ c.get_absolute_url }}">{{ c.title }}</a>
+                            </h3>
+
+                            <p class="text-xs text-slate-600 line-clamp-2 mb-3">
+                                {{ c.short_description }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <!-- Volunteer Mobilization Progress -->
+                            <div class="mb-3">
+                                <div class="flex justify-between text-[11px] font-semibold text-slate-700 mb-1">
+                                    <span>Mobilized: {{ c.enrolled_volunteers_count }} / {{ c.target_volunteers }}</span>
+                                    <span>{{ c.mobilization_percentage }}%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ c.mobilization_percentage }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs">
+                                <span class="text-slate-500">
+                                    <i class="fa-solid fa-calendar-days text-slate-400 mr-1"></i> {{ c.start_date|date:"d M" }} - {{ c.end_date|date:"d M, Y" }}
+                                </span>
+                                <a href="{{ c.get_absolute_url }}" class="gov-btn bg-blue-900 hover:bg-blue-800 text-white text-xs px-3 py-1.5 rounded">
+                                    View Shifts <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="gov-card p-8 text-center text-slate-500">
+            <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-400"></i>
+            <p>No active campaigns found. Please run sample data or create one via the Operations Command.</p>
+        </div>
+    {% endif %}
+</section>
+
+<!-- ========================================================================= -->
+<!-- 4-STEP VOLUNTEER WORKFLOW (HOW IT WORKS)                                   -->
+<!-- ========================================================================= -->
+<section class="mb-12 bg-white rounded-lg border border-slate-200 p-6 md:p-8 shadow-sm">
+    <div class="text-center max-w-2xl mx-auto mb-8">
+        <div class="text-xs uppercase font-bold text-amber-700 tracking-wider">
+            कार्यप्रणाली | Standard Operating Procedure
+        </div>
+        <h2 class="gov-section-heading gov-section-heading-center text-xl md:text-2xl mt-1">
+            How Volunteer Operations Work
+        </h2>
+        <p class="text-xs text-slate-500">
+            Four streamlined steps from digital registration to verified ground impact and certificate issuance.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+        
+        <!-- Step 1 -->
+        <div class="text-center p-4 rounded bg-slate-50 border border-slate-200">
+            <div class="w-12 h-12 mx-auto rounded-full bg-amber-600 text-white font-black text-lg flex items-center justify-center mb-3 shadow">
+                1
+            </div>
+            <h3 class="font-bold text-sm text-govnavy mb-1">Digital Registration</h3>
+            <p class="text-xs text-slate-600">
+                Enroll with basic profile, skills, contact info, and generate your official Seva ID badge.
+            </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center p-4 rounded bg-slate-50 border border-slate-200">
+            <div class="w-12 h-12 mx-auto rounded-full bg-blue-900 text-white font-black text-lg flex items-center justify-center mb-3 shadow">
+                2
+            </div>
+            <h3 class="font-bold text-sm text-govnavy mb-1">Set Availability & Skills</h3>
+            <p class="text-xs text-slate-600">
+                Indicate recurring weekly slots (Mornings, Weekends) and specializations (First Aid, Logistics, Tech).
+            </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center p-4 rounded bg-slate-50 border border-slate-200">
+            <div class="w-12 h-12 mx-auto rounded-full bg-emerald-700 text-white font-black text-lg flex items-center justify-center mb-3 shadow">
+                3
+            </div>
+            <h3 class="font-bold text-sm text-govnavy mb-1">Join Shift & Duty Role</h3>
+            <p class="text-xs text-slate-600">
+                Select suitable campaign shifts. Get assigned specific roles like Field Marshall or Desk In-Charge.
+            </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="text-center p-4 rounded bg-slate-50 border border-slate-200">
+            <div class="w-12 h-12 mx-auto rounded-full bg-amber-700 text-white font-black text-lg flex items-center justify-center mb-3 shadow">
+                4
+            </div>
+            <h3 class="font-bold text-sm text-govnavy mb-1">Verified Certificate</h3>
+            <p class="text-xs text-slate-600">
+                Check in at site. Upon duty completion, coordinator signs off your hours and generates digital certificate.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- PHOTO GALLERY PLACEHOLDERS (USER CUSTOMIZATION SECTION)                    -->
+<!-- ========================================================================= -->
+<section class="mb-12">
+    <div class="flex justify-between items-center mb-4 border-b border-slate-200 pb-2">
+        <div>
+            <h2 class="gov-section-heading text-xl md:text-2xl">
+                कार्य क्षेत्र की झलकियां | Field Operations Gallery
+            </h2>
+            <p class="text-xs text-slate-500">
+                Photographic records of on-ground humanitarian mobilization across sectors.
+            </p>
+        </div>
+    </div>
+
+    <!-- 4-Image Grid with Clear User Comments for Image Replacement -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Photo 1: Disaster Relief -->
+        <div class="gov-card overflow-hidden border border-slate-300 group">
+            <div class="h-44 bg-slate-800 relative flex items-center justify-center text-slate-400">
+                <!-- ================================================================= -->
+                <!-- USER CUSTOMIZATION: FIELD PHOTO 1                                 -->
+                <!-- Place your image file in `static/images/gallery/photo1.jpg`       -->
+                <!-- and replace the block below with:                                 -->
+                <!-- <img src="{% static 'images/gallery/photo1.jpg' %}" ...>          -->
+                <!-- ================================================================= -->
+                <div class="text-center p-4">
+                    <i class="fa-solid fa-truck-droplet text-3xl text-amber-400 mb-2"></i>
+                    <div class="text-xs font-bold text-slate-200">Disaster & Relief Logistics</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Photo placeholder 1</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                <div class="text-xs font-bold text-govnavy">Flood Relief Ration Distribution</div>
+                <div class="text-[11px] text-slate-500">Emergency Relief Squad</div>
+            </div>
+        </div>
+
+        <!-- Photo 2: Health & Medical -->
+        <div class="gov-card overflow-hidden border border-slate-300 group">
+            <div class="h-44 bg-slate-800 relative flex items-center justify-center text-slate-400">
+                <!-- ================================================================= -->
+                <!-- USER CUSTOMIZATION: FIELD PHOTO 2                                 -->
+                <!-- Place your image file in `static/images/gallery/photo2.jpg`       -->
+                <!-- ================================================================= -->
+                <div class="text-center p-4">
+                    <i class="fa-solid fa-heart-pulse text-3xl text-rose-400 mb-2"></i>
+                    <div class="text-xs font-bold text-slate-200">Health Camp Screening</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Photo placeholder 2</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                <div class="text-xs font-bold text-govnavy">Free Medical & Vitals Camp</div>
+                <div class="text-[11px] text-slate-500">First-Aid & Triage Unit</div>
+            </div>
+        </div>
+
+        <!-- Photo 3: Education & Literacy -->
+        <div class="gov-card overflow-hidden border border-slate-300 group">
+            <div class="h-44 bg-slate-800 relative flex items-center justify-center text-slate-400">
+                <!-- ================================================================= -->
+                <!-- USER CUSTOMIZATION: FIELD PHOTO 3                                 -->
+                <!-- Place your image file in `static/images/gallery/photo3.jpg`       -->
+                <!-- ================================================================= -->
+                <div class="text-center p-4">
+                    <i class="fa-solid fa-book-open-reader text-3xl text-emerald-400 mb-2"></i>
+                    <div class="text-xs font-bold text-slate-200">Rural Literacy Drives</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Photo placeholder 3</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                <div class="text-xs font-bold text-govnavy">Pratham Shiksha Mission</div>
+                <div class="text-[11px] text-slate-500">Volunteer Teachers Unit</div>
+            </div>
+        </div>
+
+        <!-- Photo 4: Afforestation & Civic Cleanliness -->
+        <div class="gov-card overflow-hidden border border-slate-300 group">
+            <div class="h-44 bg-slate-800 relative flex items-center justify-center text-slate-400">
+                <!-- ================================================================= -->
+                <!-- USER CUSTOMIZATION: FIELD PHOTO 4                                 -->
+                <!-- Place your image file in `static/images/gallery/photo4.jpg`       -->
+                <!-- ================================================================= -->
+                <div class="text-center p-4">
+                    <i class="fa-solid fa-tree text-3xl text-green-400 mb-2"></i>
+                    <div class="text-xs font-bold text-slate-200">Van Mahotsav Plantation</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Photo placeholder 4</div>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                <div class="text-xs font-bold text-govnavy">Urban Afforestation Drive</div>
+                <div class="text-[11px] text-slate-500">Eco-Brigade Volunteers</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ========================================================================= -->
+<!-- NATIONAL VOLUNTEER PLEDGE / SANKALP                                       -->
+<!-- ========================================================================= -->
+<section class="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-600 p-6 rounded shadow-sm">
+    <div class="flex items-start gap-4">
+        <div class="text-3xl text-amber-700 hidden sm:block">
+            <i class="fa-solid fa-quote-left"></i>
+        </div>
+        <div>
+            <h3 class="text-base font-bold text-amber-950 uppercase tracking-wider mb-1">
+                राष्ट्र सेवा संकल्प | The National Voluntary Action Pledge
+            </h3>
+            <p class="text-xs md:text-sm text-amber-900/90 leading-relaxed italic">
+                "I solemnly pledge to dedicate my time, skills, and energy without prejudice to the service of the nation and the vulnerable. I shall uphold the values of empathy, discipline, safety, and mutual respect on every field mission, working hand-in-hand with my fellow citizens."
+            </p>
+            <div class="mt-2 text-xs font-bold text-amber-800">
+                — Directorate of Voluntary Mobilization & Partner NGOs
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

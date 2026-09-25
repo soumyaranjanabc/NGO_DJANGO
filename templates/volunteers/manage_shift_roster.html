@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}रोस्टर प्रबंधन | Shift Roster Management - राष्ट्रीय सेवा सेतु{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <nav class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <a href="{% url 'home' %}" class="hover:text-amber-700">Home</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'operations_dashboard' %}" class="hover:text-amber-700">Operations Command</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'shift_detail' shift.id %}" class="hover:text-amber-700">{{ shift.title|truncatechars:25 }}</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800 font-semibold">Roster Controller</span>
+    </nav>
+
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-3">
+        <div>
+            <div class="text-xs uppercase font-bold text-amber-700 tracking-wider">
+                Shift Duty Allocation Desk
+            </div>
+            <h1 class="text-2xl font-black text-govnavy">
+                {{ shift.title }}
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                <i class="fa-solid fa-calendar-day mr-1"></i> {{ shift.date|date:"D, d M Y" }} ({{ shift.start_time|time:"h:i A" }} - {{ shift.end_time|time:"h:i A" }}) • 
+                {{ shift.reporting_location }}
+            </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <a href="{% url 'mark_shift_attendance' shift.id %}" class="gov-btn gov-btn-green text-xs py-1.5 px-3">
+                <i class="fa-solid fa-signature mr-1"></i> Mark Attendance
+            </a>
+            <a href="{% url 'shift_detail' shift.id %}" class="gov-btn gov-btn-outline text-xs py-1.5 px-3">
+                View Shift Brief
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Shift Capacity Metric Bar -->
+<div class="gov-card p-4 mb-6 bg-white border border-slate-200">
+    <div class="flex flex-wrap justify-between items-center text-xs">
+        <div>
+            <span class="text-slate-500">Required Volunteer Quota:</span>
+            <strong class="text-slate-800 ml-1">{{ shift.required_volunteers }} Volunteers</strong>
+        </div>
+        <div>
+            <span class="text-slate-500">Currently Confirmed:</span>
+            <strong class="text-emerald-700 ml-1">{{ shift.confirmed_count }} Confirmed</strong>
+        </div>
+        <div>
+            <span class="text-slate-500">Remaining Slots:</span>
+            <strong class="{% if shift.is_full %}text-rose-700{% else %}text-amber-700{% endif %} ml-1">
+                {{ shift.slots_remaining }} Available
+            </strong>
+        </div>
+        <div>
+            <span class="text-slate-500">Shift In-Charge:</span>
+            <strong class="text-slate-800 ml-1">{{ shift.in_charge_name }} ({{ shift.in_charge_contact }})</strong>
+        </div>
+    </div>
+</div>
+
+<!-- Volunteer Roster Table -->
+<div class="gov-card bg-white border border-slate-200 overflow-hidden shadow-sm">
+    <div class="gov-card-header flex justify-between items-center">
+        <span class="flex items-center gap-2">
+            <i class="fa-solid fa-users text-amber-600"></i>
+            <span>आवेदक स्वयंसेवक रोस्टर | Enrolled Volunteers Roster</span>
+        </span>
+        <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">
+            {{ assignments.count }} Applicants
+        </span>
+    </div>
+
+    <div class="p-4">
+        {% if assignments %}
+            <div class="overflow-x-auto">
+                <table class="gov-table">
+                    <thead>
+                        <tr>
+                            <th>Volunteer Details</th>
+                            <th>Skills & Experience</th>
+                            <th>Assigned Role</th>
+                            <th>Status</th>
+                            <th>Role & Roster Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in assignments %}
+                            <tr>
+                                <td>
+                                    <div class="font-bold text-govnavy text-sm">
+                                        {{ a.volunteer.user.get_full_name|default:a.volunteer.user.username }}
+                                    </div>
+                                    <div class="text-[11px] font-mono text-amber-800 font-bold">
+                                        {{ a.volunteer.volunteer_id }}
+                                    </div>
+                                    <div class="text-xs text-slate-500 mt-0.5">
+                                        <i class="fa-solid fa-phone text-slate-400 mr-1"></i> {{ a.volunteer.phone }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-xs text-slate-700 max-w-xs">
+                                        {{ a.volunteer.skills }}
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 mt-1">
+                                        Served: <strong class="text-amber-700 font-mono">{{ a.volunteer.total_hours_served }}h</strong> ({{ a.volunteer.completed_shifts_count }} shifts)
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="inline-block bg-blue-50 border border-blue-200 text-blue-900 text-xs px-2.5 py-1 rounded font-semibold">
+                                        {{ a.role.name|default:"General Duty" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="{% if a.status == 'APPROVED' %}bg-emerald-100 text-emerald-800 border-emerald-300{% elif a.status == 'WAITLISTED' %}bg-amber-100 text-amber-800 border-amber-300{% elif a.status == 'COMPLETED' %}bg-indigo-100 text-indigo-800 border-indigo-300{% else %}bg-slate-200 text-slate-700 border-slate-300{% endif %} text-xs font-bold px-2 py-0.5 rounded border">
+                                        {{ a.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" action="{% url 'manage_shift_roster' shift.id %}" class="flex flex-wrap items-center gap-1.5 text-xs">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="assignment_id" value="{{ a.id }}">
+
+                                        <!-- Role Selector -->
+                                        <select name="role_id" class="gov-select text-xs py-1 w-36">
+                                            <option value="">General Support</option>
+                                            {% for r in roles %}
+                                                <option value="{{ r.id }}" {% if a.role_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                        <!-- Status Action Buttons -->
+                                        {% if a.status != 'APPROVED' %}
+                                            <button type="submit" name="action" value="approve" class="gov-btn gov-btn-green text-xs py-1 px-2" title="Approve / Confirm Roster">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                        {% endif %}
+
+                                        {% if a.status != 'WAITLISTED' %}
+                                            <button type="submit" name="action" value="waitlist" class="gov-btn gov-btn-saffron text-xs py-1 px-2" title="Move to Waitlist">
+                                                <i class="fa-solid fa-pause"></i>
+                                            </button>
+                                        {% endif %}
+
+                                        <button type="submit" name="action" value="cancel" class="text-rose-600 hover:text-rose-800 p-1" title="Cancel Assignment">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8 text-slate-500 text-xs">
+                <i class="fa-solid fa-user-xmark text-3xl text-slate-400 mb-2"></i>
+                <p>No volunteers have applied for this shift yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

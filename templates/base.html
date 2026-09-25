@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}राष्ट्रीय सेवा सेतु | National NGO Volunteer Operations Platform{% endblock %}</title>
+
+    <!-- Tailwind CSS CDN for modern responsive utilities -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        govnavy: '#002147',
+                        govnavylight: '#0B2545',
+                        govsaffron: '#FF9933',
+                        govsaffrondark: '#D97706',
+                        govgreen: '#138808',
+                        govgreendark: '#15803D',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Indian Government Aesthetic Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/gov-theme.css' %}">
+
+    <!-- Font Awesome Icons for Official Glyphs -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+
+    <!-- ========================================================================= -->
+    <!-- TOP ACCESSIBILITY & CITIZEN UTILITY BAR (GOVERNMENT OF INDIA STANDARD)     -->
+    <!-- ========================================================================= -->
+    <div class="gov-top-bar py-1 px-4 border-b border-slate-700">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center text-xs">
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center text-amber-400 font-semibold">
+                    <i class="fa-solid fa-flag mr-1"></i> भारत सरकार सहबद्ध | NGO Voluntary Action Network
+                </span>
+                <span class="hidden md:inline text-slate-500">|</span>
+                <span id="ist-live-clock" class="hidden md:inline text-slate-300 font-mono">Loading IST...</span>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Screen Reader Access -->
+                <a href="#main-content" class="hover:text-amber-300 hidden sm:inline" title="Skip to main content">
+                    <i class="fa-solid fa-universal-access mr-1"></i> Skip to Main Content
+                </a>
+                <span class="text-slate-600">|</span>
+                
+                <!-- Font Resizer A- A A+ -->
+                <div class="flex items-center space-x-1 font-bold">
+                    <button id="btn-font-decrease" class="px-1 text-xs hover:text-amber-400" title="Decrease Font Size">A-</button>
+                    <button id="btn-font-normal" class="px-1 text-xs hover:text-amber-400" title="Default Font Size">A</button>
+                    <button id="btn-font-increase" class="px-1 text-xs hover:text-amber-400" title="Increase Font Size">A+</button>
+                </div>
+                <span class="text-slate-600">|</span>
+
+                <!-- High Contrast Toggle -->
+                <button id="btn-high-contrast" class="hover:text-amber-300 flex items-center gap-1" title="Toggle High Contrast Mode">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                    <span class="hidden sm:inline">Contrast</span>
+                </button>
+                <span class="text-slate-600">|</span>
+
+                <!-- Language indicator -->
+                <span class="text-amber-400 font-medium">English / हिन्दी</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- OFFICIAL HEADER & EMBLEM (USER CUSTOMIZATION POINT)                       -->
+    <!-- ========================================================================= -->
+    <header class="gov-header bg-white py-3 px-4 shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <!-- ================================================================= -->
+                <!-- USER CUSTOMIZATION: REPLACE THIS SVG EMBLEM WITH YOUR NGO LOGO    -->
+                <!-- To replace:                                                       -->
+                <!-- 1. Copy your logo image into: `static/images/ngo-logo.png`        -->
+                <!-- 2. Comment out the SVG below and uncomment the <img> tag!         -->
+                <!-- ================================================================= -->
+                
+                <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+                    <div class="gov-emblem-seal w-16 h-16 shadow-inner flex items-center justify-center p-1 bg-amber-50 border-2 border-amber-600">
+                        <!-- Official Ashoka Chakra / NGO Seva Emblem SVG -->
+                        <svg class="w-12 h-12 text-blue-900" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="46" stroke="#000080" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="12" fill="#000080"/>
+                            <!-- 24 Spokes of Ashoka Chakra -->
+                            <g stroke="#000080" stroke-width="2">
+                                <line x1="50" y1="4" x2="50" y2="96"/>
+                                <line x1="4" y1="50" x2="96" y2="50"/>
+                                <line x1="17.5" y1="17.5" x2="82.5" y2="82.5"/>
+                                <line x1="17.5" y1="82.5" x2="82.5" y2="17.5"/>
+                                <line x1="27.3" y1="7.3" x2="72.7" y2="92.7"/>
+                                <line x1="7.3" y1="27.3" x2="92.7" y2="72.7"/>
+                                <line x1="7.3" y1="72.7" x2="92.7" y2="27.3"/>
+                                <line x1="27.3" y1="92.7" x2="72.7" y2="7.3"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- OR UNCOMMENT FOR YOUR OWN NGO IMAGE FILE: -->
+                    <!--
+                    <img src="{% static 'images/ngo-logo.png' %}" alt="My NGO Logo" class="h-16 w-auto object-contain">
+                    -->
+
+                    <div>
+                        <div class="text-xs uppercase tracking-wider text-amber-700 font-bold">
+                            {{ NGO_AFFILIATION }}
+                        </div>
+                        <h1 class="text-xl md:text-2xl font-black text-govnavy leading-tight">
+                            {{ NGO_PORTAL_NAME }}
+                        </h1>
+                        <p class="text-xs font-medium text-slate-600">
+                            {{ NGO_SUBTITLE }}
+                        </p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- National Emergency & Volunteer Helpline -->
+            <div class="hidden lg:flex items-center gap-4 bg-amber-50/80 border border-amber-200 px-4 py-2 rounded">
+                <div class="text-center text-amber-700 text-2xl">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-amber-800 font-bold uppercase tracking-wider">
+                        24x7 Volunteer Control Room
+                    </div>
+                    <div class="text-base font-black text-govnavy font-mono">
+                        {{ HELPLINE_PRIMARY }}
+                    </div>
+                    <div class="text-[11px] text-slate-500">
+                        {{ HELPLINE_SECONDARY }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Tiranga Tricolor Accent Ribbon (Indian Flag Identity) -->
+    <div class="tiranga-strip"></div>
+
+    <!-- ========================================================================= -->
+    <!-- NATIONAL NAVIGATION BAR                                                   -->
+    <!-- ========================================================================= -->
+    <nav class="gov-navbar sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center">
+            
+            <div class="flex items-center overflow-x-auto py-1">
+                <a href="{% url 'home' %}" class="gov-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="fa-solid fa-house text-sm"></i>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'campaign_list' %}" class="gov-nav-link {% if 'campaign' in request.path %}active{% endif %}">
+                    <i class="fa-solid fa-bullhorn text-sm"></i>
+                    <span>Campaigns & Drives</span>
+                </a>
+                <a href="{% url 'verify_certificate' %}" class="gov-nav-link {% if request.resolver_match.url_name == 'verify_certificate' %}active{% endif %}">
+                    <i class="fa-solid fa-certificate text-sm"></i>
+                    <span>Verify Certificate</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'volunteer_dashboard' %}" class="gov-nav-link {% if 'volunteer' in request.path %}active{% endif %}">
+                        <i class="fa-solid fa-user-shield text-sm"></i>
+                        <span>Volunteer Portal</span>
+                    </a>
+                    
+                    {% if user_is_coordinator %}
+                        <a href="{% url 'operations_dashboard' %}" class="gov-nav-link bg-amber-600/30 text-amber-300 border-b-2 border-amber-400 {% if 'operations' in request.path %}active{% endif %}">
+                            <i class="fa-solid fa-sliders text-sm"></i>
+                            <span>Operations Command</span>
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- User Auth Links -->
+            <div class="flex items-center gap-2 py-2 text-xs">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center gap-2 text-slate-200">
+                        <span class="hidden sm:inline bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                            <i class="fa-solid fa-circle-user text-amber-400 mr-1"></i>
+                            {{ user.get_full_name|default:user.username }}
+                            {% if user_is_coordinator %}
+                                <span class="bg-amber-600 text-white text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold">Officer</span>
+                            {% endif %}
+                        </span>
+                        
+                        <form method="post" action="{% url 'logout' %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-red-800 hover:bg-red-700 text-white px-2.5 py-1 rounded border border-red-900 transition flex items-center gap-1">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded font-semibold transition flex items-center gap-1">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Official Login</span>
+                    </a>
+                    <a href="{% url 'register' %}" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded font-bold transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Join as Volunteer</span>
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ========================================================================= -->
+    <!-- OFFICIAL NOTICE TICKER (GOVERNMENT CIRCULARS / ANNOUNCEMENTS)             -->
+    <!-- ========================================================================= -->
+    {% if ticker_announcements %}
+    <div class="gov-ticker py-1.5 px-4 text-xs font-medium flex items-center shadow-inner">
+        <div class="max-w-7xl mx-auto w-full flex items-center">
+            <span class="ticker-badge mr-3 rounded-sm shrink-0">
+                <i class="fa-solid fa-bullhorn mr-1.5"></i> ताज़ा सूचनाएँ / LATEST CIRCULARS
+            </span>
+            <div class="overflow-hidden whitespace-nowrap w-full">
+                <div class="inline-block animate-marquee space-x-8 text-amber-950 font-semibold">
+                    {% for item in ticker_announcements %}
+                        <span>
+                            <span class="text-red-700 font-bold">[{{ item.get_priority_display }}]</span>
+                            {{ item.title }} - {{ item.message|truncatewords:15 }}
+                            <span class="text-slate-400 mx-2">•</span>
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ========================================================================= -->
+    <!-- DJANGO ALERT MESSAGES                                                     -->
+    <!-- ========================================================================= -->
+    <div class="max-w-7xl mx-auto px-4 mt-4 w-full">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="p-3 mb-3 rounded-md text-sm border flex items-start gap-2 shadow-sm
+                    {% if message.tags == 'success' %}bg-emerald-50 text-emerald-900 border-emerald-300
+                    {% elif message.tags == 'error' %}bg-rose-50 text-rose-900 border-rose-300
+                    {% elif message.tags == 'warning' %}bg-amber-50 text-amber-900 border-amber-300
+                    {% else %}bg-blue-50 text-blue-900 border-blue-300{% endif %}">
+                    <div class="mt-0.5">
+                        {% if message.tags == 'success' %}<i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        {% elif message.tags == 'error' %}<i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
+                        {% else %}<i class="fa-solid fa-circle-info text-blue-600"></i>{% endif %}
+                    </div>
+                    <div class="flex-1 font-medium">{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MAIN CONTENT VIEWPORT                                                     -->
+    <!-- ========================================================================= -->
+    <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- OFFICIAL GOVERNMENT / NATIONAL NGO FOOTER                                 -->
+    <!-- ========================================================================= -->
+    <footer class="mt-auto bg-govnavy text-slate-300 border-t-4 border-amber-500 pt-10 pb-6 text-sm">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            
+            <!-- Col 1: About Platform -->
+            <div>
+                <div class="text-white font-bold text-base mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-hands-holding-child text-amber-400"></i>
+                    <span>राष्ट्रीय सेवा सेतु</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed mb-3">
+                    A centralized, digitized volunteer operations coordination framework empowering citizen mobilization across humanitarian relief, disaster response, healthcare drives, and civic enrichment.
+                </p>
+                <div class="text-[11px] text-amber-300/90 font-mono">
+                    Registered under Society Registration Act & Public Voluntary Trust Standards.
+                </div>
+            </div>
+
+            <!-- Col 2: Useful Portals & National Initiatives -->
+            <div>
+                <h3 class="text-white font-bold text-sm mb-3 uppercase tracking-wider border-b border-slate-700 pb-1">
+                    National Initiatives
+                </h3>
+                <ul class="text-xs space-y-2">
+                    <li><a href="https://www.india.gov.in" target="_blank" rel="noopener" class="hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i> National Portal of India (india.gov.in)</a></li>
+                    <li><a href="https://mygov.in" target="_blank" rel="noopener" class="hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i> MyGov Citizen Platform</a></li>
+                    <li><a href="https://nss.gov.in" target="_blank" rel="noopener" class="hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i> National Service Scheme (NSS)</a></li>
+                    <li><a href="https://ndma.gov.in" target="_blank" rel="noopener" class="hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i> National Disaster Management Authority</a></li>
+                </ul>
+            </div>
+
+            <!-- Col 3: Portal Helpdesk & Contacts -->
+            <div>
+                <h3 class="text-white font-bold text-sm mb-3 uppercase tracking-wider border-b border-slate-700 pb-1">
+                    Support & Control Room
+                </h3>
+                <div class="text-xs space-y-2">
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-amber-400"></i>
+                        <span>Toll-Free: {{ HELPLINE_PRIMARY }}</span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-amber-400"></i>
+                        <span>{{ HELPLINE_EMAIL }}</span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-amber-400"></i>
+                        <span>Central Volunteer Command Cell, New Delhi - 110001</span>
+                    </p>
+                    <div class="pt-2">
+                        <a href="{% url 'verify_certificate' %}" class="inline-block bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 text-xs px-2.5 py-1 rounded">
+                            <i class="fa-solid fa-qrcode mr-1"></i> Public Certificate Verification
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Col 4: Website Policies & Standards -->
+            <div>
+                <h3 class="text-white font-bold text-sm mb-3 uppercase tracking-wider border-b border-slate-700 pb-1">
+                    Website Policies
+                </h3>
+                <ul class="text-xs space-y-1.5 text-slate-400">
+                    <li><a href="#" class="hover:text-white">Website Quality & Accessibility Policy</a></li>
+                    <li><a href="#" class="hover:text-white">Volunteer Privacy & Data Charter</a></li>
+                    <li><a href="#" class="hover:text-white">Copyright & Code of Conduct</a></li>
+                    <li><a href="#" class="hover:text-white">Right to Information (RTI) Compliance</a></li>
+                    <li><a href="#" class="hover:text-white">Terms of Humanitarian Deployment</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Sub-footer copyright strip -->
+        <div class="border-t border-slate-800 pt-6 px-4 text-center text-xs text-slate-400">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+                <div>
+                    Content Owned, Maintained and Operated by Volunteer Operations Directorate & NGOs Network.
+                </div>
+                <div>
+                    Platform Version 2026.1 • Developed in Compliance with GIGW (Guidelines for Indian Government Websites).
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Accessibility and Live Clock Script -->
+    <script src="{% static 'js/gov-accessibility.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
