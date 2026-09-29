@@ -2,8 +2,10 @@ asgiref==3.12.1
 brotli==1.2.0
 dj-database-url==3.1.2
 Django==6.1.1
+dnspython==2.8.0
 gunicorn==26.2.0
 pillow==12.3.0
 psycopg2-binary==2.9.13
+pymongo==4.18.2
 sqlparse==0.6.0
 whitenoise==6.12.0
