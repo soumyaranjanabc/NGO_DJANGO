@@ -43,8 +43,8 @@ for line in lines:
             row = [cell.strip() for cell in lines[idx].strip().strip('|').split('|')]
             table_rows.append(row)
             idx += 1
-        # Skip the separator line (---) if present
-        if table_rows and all(set(c) <= set('-') for c in table_rows[1]):
+        # Skip the markdown separator line (---) if present and ensure there are at least two rows
+        if len(table_rows) > 1 and all(set(cell) <= {'-'} for cell in table_rows[1]):
             table_rows.pop(1)
         # Create table in docx
         if table_rows:

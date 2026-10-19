@@ -1,17 +1,17 @@
 '''volunteers/mongo.py
 ----------------------
-PyMongo integration for auxiliary real‑time data that does not need the Django ORM.
+PyMongo integration for auxiliary real-time data that does not need the Django ORM.
 Three collections are defined:
-  * operations_logs     – audit trail for coordinator actions
-  * volunteer_feedback  – free‑form feedback from volunteers
-  * emergency_dispatches – urgent resource dispatch records
+  * operations_logs    - audit trail for coordinator actions
+  * volunteer_feedback  -free-form feedback from volunteers
+  * emergency_dispatches - urgent resource dispatch records
 The module provides:
   * a singleton ``MongoClient`` with a short timeout (fails fast if MongoDB is offline)
-  * graceful **in‑memory fallback** so the app continues to work without a running Mongo instance
+  * graceful **in-memory fallback** so the app continues to work without a running Mongo instance
   * helper functions for each collection (create, read, update, delete) with **basic validation**
-  * ``is_mongo_online()`` – used by the context processor to surface connection status in the UI
+  * ``is_mongo_online()``- used by the context processor to surface connection status in the UI
 
-NOTE: All functions return plain Python ``dict`` objects – they never expose ``ObjectId``
+NOTE: All functions return plain Python ``dict`` objects - they never expose ``ObjectId``
 instances to the rest of the Django code. When the fallback store is used an ``uuid4``
 string mimics an ObjectId.
 ''' 
@@ -208,7 +208,7 @@ def create_operation_log(event_type: str, description: str, performed_by: str = 
     }
     errs = _validate_operation_log(payload)
     if errs:
-        raise ValueError("Invalid operation‑log data: " + "; ".join(errs))
+        raise ValueError("Invalid operation-log data: " + "; ".join(errs))
     return _insert_one("operations_logs", payload)
 
 def get_operation_log(log_id: str) -> Optional[Dict[str, Any]]:
